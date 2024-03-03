@@ -3,10 +3,6 @@ body {
   margin: 0;
 }
 
-repeat-item {
-  display: contents;
-}
-
 .world-editor {
   display: flex;
   box-sizing: border-box;
@@ -33,14 +29,14 @@ repeat-item {
   outline: 1px solid #f1c40f;
   position: absolute;
   background: #e74c3c;
-}
 
-.world-editor--map:hover {
-  outline: 2px solid #f1c40f;
-}
-
-.world-editor--map.dragged {
-  outline: 2px solid #2ecc71;
+  &:hover {
+    outline: 2px solid #f1c40f;
+  }
+  
+  &.current {
+    outline: 2px solid #2ecc71;
+  }
 }
 
 .world-editor--map-name {
@@ -65,7 +61,38 @@ repeat-item {
 }
 
 .world-editor--controls {
-  background: #16a085;
+  display: flex;
+  flex-direction: column; 
+  gap: 10px;
   padding: 10px;
+  background: #16a085;
+  overflow-y: scroll;
+  width: 300px;
+
+  fieldset {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+  }
+
+  .tile-palette {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+  
+    .tile-preview {
+      display: flex; 
+      flex-direction: column;
+      outline-offset: 2px;
+  
+      &:hover {
+        outline: 1px solid #f1c40f;
+      }
+  
+      &.selected {
+        outline: 3px solid #f1c40f;
+      }
+    }
+  }
 }
 
