@@ -23,7 +23,7 @@ window.x = data
 const handleWheelZoom = (event) => {
   event.preventDefault();
   const delta = Math.sign(-event.deltaY) * 10
-  viewZoom = clamp(viewZoom + delta, 50, 400)
+  viewZoom = clamp(viewZoom + delta, 10, 400)
 }
 
 const handleMousedownPan = (event) => {
