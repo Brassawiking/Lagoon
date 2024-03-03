@@ -1,4 +1,4 @@
-import { ref, compareArrays } from '../framework2.js'
+import { ref, compareArrays } from '../framework.js'
 
 let todos = []
 let editingTodo
@@ -26,6 +26,21 @@ const updateFilter = () => {
 updateFilter()
 window.addEventListener('hashchange', updateFilter)
 
+// TODO: Support for templating
+/*
+x.innerHTML = `
+  ${template.if(() => showList, () => `
+    <ul>
+      ${template.repeat(() => items, (item) => `
+        <li>
+          ${template.text(() => `${item.name}`)}
+        </li>
+      `)}
+    </ul>
+  `)}
+`
+*/
+
 document.querySelector('#app').innerHTML = `
   <section class="todoapp">
     <header class="header">
@@ -49,16 +64,6 @@ document.querySelector('#app').innerHTML = `
         }
       >
     </header>
-
-    ${template.if(() => showList, () => `
-      <ul>
-        ${template.repeat(() => items, (item) => `
-          <li>
-            ${template.text(() => `${item.name}`)}
-          </li>
-        `)}
-      </ul>
-    `)}
 
     <section class="main" ${ref()
       .style('display', () => !todos.length ? 'none' : null)
@@ -162,7 +167,7 @@ document.querySelector('#app').innerHTML = `
 
   <footer class="info">
     <p>Double-click to edit a todo</p>
-    <p>Created by <a href="http://todomvc.com">Brassawiking</a></p>
-    <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    <p>Created by <a href="https://github.com/Brassawiking">Brassawiking</a></p>
+    <p>Based on <a href="http://todomvc.com">TodoMVC</a></p>
   </footer>
 `

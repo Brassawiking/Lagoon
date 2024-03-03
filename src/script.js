@@ -1,6 +1,6 @@
-import { ref, debugLiveWatchers, debugRefCounter, compareArrays } from './framework2.js'
+import { ref, debugLiveWatchers, debugRefCounter } from '../framework/framework.js'
 import { clamp, mouseDrag } from './utils.js'
-import rawData from '../data.json' assert { type: 'json' }
+import rawData from '../data/data.json' assert { type: 'json' }
 
 const MOUSE_LEFT_BUTTON = 0
 const MOUSE_MIDDLE_BUTTON = 1
@@ -148,13 +148,3 @@ document.querySelector('#app').innerHTML = `
     </div>
   </div>
 `
-
-// 1. [DONE] Full page static render => .innerHTML
-// 2. [DONE] Full page static render with data => .innerHTML + tagged template literal
-// 3. [DONE] Event binding => Delayed binding by unique ref attribute
-// 4. [DONE] Unify initial static data render with dynamic update => live binding
-// 5. [DONE] Support derivative data => comparison function for set
-// 6. [DONE] Daisy-chained API to reduce refs => Refactored API and implementatoin
-// 7. Support templating for conditional renderering
-
-
