@@ -64,8 +64,8 @@ const handleMousedownMap = (event, map, $element) => {
 }
 
 const addMap = () => {
-  const width = 8
-  const height = 8
+  const width = 16
+  const height = 16
   data.maps = [
     ...data.maps,
     currentMap = {
