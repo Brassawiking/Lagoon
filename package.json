@@ -1,5 +1,5 @@
 {
   "scripts": {
-    "serve": "npx http-server -c-1"
+    "start": "npx http-server -c-1"
   }
 }

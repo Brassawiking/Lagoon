@@ -16,7 +16,7 @@ let viewOriginX = -50
 let viewOriginY = -50
 let viewZoom = 100
 let currentMap
-let currentTool = TOOL_PAINT
+let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 window.x = data
 
@@ -75,6 +75,20 @@ const addMap = () => {
       x: 0,
       y: 0,
       tilemap: Array(width * height).fill(currentPaintingTile)
+    }
+  ]
+}
+
+const copyMap = () => {
+  data.maps = [
+    ...data.maps,
+    currentMap = {
+      name: `${currentMap.name} (copy)`,
+      width: currentMap.width,
+      height: currentMap.height,
+      x: currentMap.x + currentMap.width + 2,
+      y: currentMap.y,
+      tilemap: [...currentMap.tilemap]
     }
   ]
 }
@@ -232,6 +246,10 @@ document.querySelector('#app').innerHTML = `
               <div ${ref().property('innerText', () => `X: ${currentMap.x}`)}></div>
               <div ${ref().property('innerText', () => `Y: ${currentMap.y}`)}></div>
             </div>
+            
+            <button ${ref().on('click', copyMap)}>
+              Copy map
+            </button>
             
             <button ${ref().on('click', removeMap)}>
               Remove map
