@@ -1,11 +1,3 @@
-// 1. [DONE] Full page static render => .innerHTML
-// 2. [DONE] Full page static render with data => .innerHTML + tagged template literal
-// 3. [DONE] Event binding => Delayed binding by unique ref attribute
-// 4. [DONE] Unify initial static data render with dynamic update => live binding
-// 5. [DONE] Support derivative data => comparison function for set
-// 6. [DONE] Daisy-chained API to reduce refs => Refactored API and implementatoin
-// 7. Support templating for conditional renderering
-
 let refIdGenerator = 0
 export const debugRefCounter = () => refIdGenerator
 

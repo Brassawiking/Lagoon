@@ -20,6 +20,18 @@ let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 window.x = data
 
+const tileImages = await Promise.all(
+  data.tiles.map(x => 
+    new Promise(resolve => {
+      const image = new Image(16, 16)
+      image.addEventListener('load', () => {
+        resolve(image)
+      })
+      image.src = x.image
+    })
+  )
+)
+
 const handleWheelZoom = (event) => {
   event.preventDefault();
   const delta = Math.sign(-event.deltaY) * 10
@@ -48,7 +60,6 @@ const handleMousedownMap = (event, map, $element) => {
   mouseDrag(event, MOUSE_LEFT_BUTTON, () => {
     const x = map.x
     const y = map.y
-    // TODO: Style or remove
     $element.classList.add('dragged')
 
     return {
@@ -113,16 +124,16 @@ const updateMapSize = (width, height) => {
 
 document.querySelector('#app').innerHTML = `
   <div class="world-editor">
-    <div class="world-editor--view" ${ref()
+    <div class="view" ${ref()
       .on('click', () => currentMap = null)
       .on('mousedown', handleMousedownPan)
       .on('wheel', handleWheelZoom)
     }>
-      <div class="world-editor--canvas" ${ref()
+      <div class="canvas" ${ref()
         .style('scale', () => viewZoom / 100)
         .style('translate', () => `${-viewOriginX}px ${-viewOriginY}px`)
         .repeat(() => data.maps, (map) => `
-          <div class="world-editor--map" ${ref()
+          <div class="map" ${ref()
             .class('current', () => map === currentMap)
             .style('width', () => `${map.width * TILE_SIZE}px`)
             .style('height', () => `${map.height * TILE_SIZE}px`)
@@ -134,41 +145,55 @@ document.querySelector('#app').innerHTML = `
             })
             .on('mousedown', (event, el) => handleMousedownMap(event, map, el))
           }>
-            <div class="world-editor--map-name" ${ref()
+            <div class="name" ${ref()
               .property('innerText', () => map.name)
             }></div>
-            <svg class="tiles" ${ref()
-              .repeat(() => map.tilemap, (_, index) => `
-                <image class="tile" ${ref()
-                  .attribute('href', () => (data.tiles[map.tilemap[index]] || data.tiles[0]).image)
-                  .attribute('x', () => (index % map.width) * TILE_SIZE)
-                  .attribute('y', () => (index / map.width | 0) * TILE_SIZE)
-                  .on('mousedown', (event) => {
-                    if (currentMap !== map || currentTool !== TOOL_PAINT) {
-                      return
-                    }
-                    if (event.button === MOUSE_LEFT_BUTTON) {
-                      event.stopPropagation()
-                      map.tilemap[index] = currentPaintingTile
-                    }
-                  })
-                  .on('mouseover', (event) => {
-                    if (currentMap !== map || currentTool !== TOOL_PAINT) {
-                      return
-                    }
-                    if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
-                      map.tilemap[index] = currentPaintingTile
-                    }
-                  })
-                }/>
-              `, (_, index) => index)
-            }></svg>
+            <canvas class="tiles" ${ref()
+              .on('pointerdown', (event) => {
+                if (currentMap !== map || currentTool !== TOOL_PAINT) {
+                  return
+                }
+                const index = Math.floor(event.offsetX / TILE_SIZE) + Math.floor(event.offsetY / TILE_SIZE) * map.width
+                if (event.button === MOUSE_LEFT_BUTTON) {
+                  event.stopPropagation()
+                  map.tilemap[index] = currentPaintingTile
+                }
+              })
+              .on('pointermove', (originalEvent) => {
+                if (currentMap !== map || currentTool !== TOOL_PAINT) {
+                  return
+                }
+                const events = originalEvent.getCoalescedEvents()
+                for (let i = 0 ; i < events.length ; ++i) {
+                  const event = events[i]
+                  const index = Math.floor(event.offsetX / TILE_SIZE) + Math.floor(event.offsetY / TILE_SIZE) * map.width
+                  if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
+                    map.tilemap[index] = currentPaintingTile
+                  }
+                }
+              })
+              .set((canvas) => {
+                const ctx = canvas.getContext('2d')
+                canvas.width = canvas.clientWidth
+                canvas.height = canvas.clientHeight
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                
+                for (let index = 0 ; index < map.tilemap.length ; ++index) {
+                  const image = tileImages[map.tilemap[index]] || tileImages[0]
+                  ctx.drawImage(
+                    image, 
+                    (index % map.width) * TILE_SIZE, 
+                    Math.floor(index / map.width) * TILE_SIZE
+                  )
+                }
+              }, () => map.tilemap.slice(), compareArrays) 
+            }></canvas>
           </div>
         `)
       }></div>
     </div>
 
-    <div class="world-editor--controls">
+    <div class="controls">
       <fieldset>
         <legend>Toolbar</legend>
 
@@ -263,7 +288,7 @@ document.querySelector('#app').innerHTML = `
 
         <div class="tile-palette" ${ref()
           .repeat(() => data.tiles, (tile, index) => `
-            <div class="tile-preview" ${ref()
+            <div class="preview" ${ref()
               .class('selected', () => index === currentPaintingTile)
               .on('click', () => currentPaintingTile = index)
             }>
