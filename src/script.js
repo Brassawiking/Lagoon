@@ -45,8 +45,8 @@ const handleMousedownPan = (event) => {
 
     return {
       onDrag: (deltaX, deltaY) => {
-        viewOriginX = x - (deltaX * 100 / viewZoom)
-        viewOriginY = y - (deltaY * 100 / viewZoom)
+        viewOriginX = x - Math.round(deltaX * 100 / viewZoom)
+        viewOriginY = y - Math.round(deltaY * 100 / viewZoom)
       }
     }
   })
