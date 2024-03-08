@@ -45,8 +45,8 @@ const handleMousedownPan = (event) => {
 
     return {
       onDrag: (deltaX, deltaY) => {
-        viewOriginX = x - deltaX
-        viewOriginY = y - deltaY
+        viewOriginX = x - (deltaX * 100 / viewZoom)
+        viewOriginY = y - (deltaY * 100 / viewZoom)
       }
     }
   })
@@ -131,14 +131,13 @@ document.querySelector('#app').innerHTML = `
     }>
       <div class="canvas" ${ref()
         .style('scale', () => viewZoom / 100)
-        .style('translate', () => `${-viewOriginX}px ${-viewOriginY}px`)
         .repeat(() => data.maps, (map) => `
           <div class="map" ${ref()
             .class('current', () => map === currentMap)
             .style('width', () => `${map.width * TILE_SIZE}px`)
             .style('height', () => `${map.height * TILE_SIZE}px`)
-            .style('left', () => `${map.x * TILE_SIZE}px`)
-            .style('top', () => `${map.y * TILE_SIZE}px`)
+            .style('left', () => `${map.x * TILE_SIZE - viewOriginX}px`)
+            .style('top', () => `${map.y * TILE_SIZE - viewOriginY}px`)
             .on('click', (event) => {
               event.stopPropagation()
               currentMap = map

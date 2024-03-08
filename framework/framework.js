@@ -43,7 +43,7 @@ export const ref = () => {
     set: (setter, valueFunc, compareFunc = (a, b) => a === b) => {
       let oldValue
       api.live((el) => {
-        const newValue = valueFunc()
+        const newValue = valueFunc(el)
         if (!compareFunc(newValue, oldValue)) {
           setter(el, newValue, oldValue)
           oldValue = newValue
