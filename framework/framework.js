@@ -139,6 +139,7 @@ const template = () => {
       return api
     },
 
+    // TODO: Remove in favor of repeat as basis instead?
     conditional: (valueFunc, renderFunc) => {
       callbacks.push((insert) => {
         const startNode = insert(document.createTextNode(''))
@@ -180,11 +181,6 @@ const template = () => {
           )
           .done()
       })
-      return api
-    },
-
-    if: (valueFunc, renderFunc) => {
-      api.conditional(valueFunc, (value) => value ? renderFunc() : '')
       return api
     },
 
@@ -241,6 +237,12 @@ const template = () => {
           )
           .done()
       })
+      return api
+    },
+
+    if: (valueFunc, renderFunc) => {
+      // TODO: Use repeat instead?
+      api.conditional(valueFunc, (value) => value ? renderFunc() : '')
       return api
     },
 
