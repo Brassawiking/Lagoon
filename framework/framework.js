@@ -121,6 +121,7 @@ const renderTemplate = document.createElement('template')
 const validateRepeatRenderingSingleRoot = (children) => children.length > 1 && console.error('Repeat does not support multiple roots in render function, remaining roots omitted!')
 
 // TODO: Revise template code structure (keeping this internal for now)
+// TODO: Support explicit insertion point?
 const template = () => {
   const callbacks = []
   const api = {
