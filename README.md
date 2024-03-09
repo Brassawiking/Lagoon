@@ -23,11 +23,13 @@ https://brassawiking.github.io/Lagoon/
 - [x] Full page static render with data 
   - => .innerHTML + tagged template literal
 - [x] Event binding 
-  - => Delayed binding by unique ref attribute
+  - => Deferred binding by unique ref attribute
 - [x] Unify initial static data render with dynamic update 
   - => live binding
 - [x] Support derivative data 
   - => comparison function for set
 - [x] Daisy-chained API to reduce refs 
   - => Refactored API and implementation
-- [ ] Support templating for conditional renderering
+- [x] Support templating for conditional renderering
+  - => Referencing by comment and text nodes
+- [ ] Scope queries to element being rendered into

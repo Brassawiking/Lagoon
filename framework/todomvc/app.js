@@ -1,4 +1,4 @@
-import { ref, compareArrays } from '../framework.js'
+import { ref, compareArrays, text, iffy, repeat } from '../framework.js'
 
 let todos = []
 let editingTodo
@@ -26,21 +26,6 @@ const updateFilter = () => {
 updateFilter()
 window.addEventListener('hashchange', updateFilter)
 
-// TODO: Support for templating
-/*
-x.innerHTML = `
-  ${template.if(() => showList, () => `
-    <ul>
-      ${template.repeat(() => items, (item) => `
-        <li>
-          ${template.text(() => `${item.name}`)}
-        </li>
-      `)}
-    </ul>
-  `)}
-`
-*/
-
 document.querySelector('#app').innerHTML = `
   <section class="todoapp">
     <header class="header">
@@ -65,104 +50,100 @@ document.querySelector('#app').innerHTML = `
       >
     </header>
 
-    <section class="main" ${ref()
-      .style('display', () => !todos.length ? 'none' : null)
-    }>
-      <input id="toggle-all" 
-        class="toggle-all" 
-        type="checkbox"
-        ${ref()
-          .on('change', () => {
-            const hasRemainingTodos = todos.find((x) => !x.done)
-            for (const todo of todos) {
-              todo.done = hasRemainingTodos
-            }
-          })
-        }
-      >
-      <label for="toggle-all">Mark all as complete</label>
-      <ul class="todo-list" ${ref()
-        .repeat(() => todos.filter(currentFilter), (todo) => `
-          <li ${ref()
-            .class('editing', () => todo === editingTodo)
-            .class('completed', () => todo.done)
-          }>
-            <div class="view">
-              <input class="toggle" 
-                type="checkbox" 
-                checked
-                ${ref()
-                  .property('checked', () => todo.done)
-                  .on('change', () => todo.done = !todo.done)
-                }
-              >
-              <label ${ref()
-                .property('innerText', () => todo.name)
-                .on('dblclick', (event, el) => {
-                  editingTodo = todo
-                  requestAnimationFrame(() => {
-                    el.closest('li').querySelector('.edit').focus()
-                  })
-                })
-              }></label>
-      
-              <button class="destroy" ${ref()
-                .on('click', () => todos = todos.filter((x) => x !== todo))
-              }></button>
-            </div>
-      
-            <input class="edit" ${ref()
-              .property('value', () => todo.name)
-              .on('input', (event) => todo.name = event.target.value)
-              .on('blur', () => editingTodo = null)
-              .on('keypress', (event) => { if (event.key === 'Enter') editingTodo = null })
+    ${iffy(() => todos.length, () => `
+      <section class="main">
+        <input id="toggle-all" 
+          class="toggle-all" 
+          type="checkbox"
+          ${ref()
+            .on('change', () => {
+              const hasRemainingTodos = todos.find((x) => !x.done)
+              for (const todo of todos) {
+                todo.done = hasRemainingTodos
+              }
+            })
+          }
+        >
+        <label for="toggle-all">Mark all as complete</label>
+        <ul class="todo-list"> 
+          ${repeat(() => todos.filter(currentFilter), (todo) => `
+            <li ${ref()
+              .class('editing', () => todo === editingTodo)
+              .class('completed', () => todo.done)
             }>
+              <div class="view">
+                <input class="toggle" 
+                  type="checkbox" 
+                  checked
+                  ${ref()
+                    .property('checked', () => todo.done)
+                    .on('change', () => todo.done = !todo.done)
+                  }
+                >
+                <label ${ref()
+                  .on('dblclick', (event, el) => {
+                    editingTodo = todo
+                    requestAnimationFrame(() => {
+                      el.closest('li').querySelector('.edit').focus()
+                    })
+                  })
+                }>
+                  ${text(() => todo.name)}
+                </label>
+        
+                <button class="destroy" ${ref().on('click', () => todos = todos.filter((x) => x !== todo))}></button>
+              </div>
+        
+              <input class="edit" ${ref()
+                .property('value', () => todo.name)
+                .on('input', (event) => todo.name = event.target.value)
+                .on('blur', () => editingTodo = null)
+                .on('keypress', (event) => { if (event.key === 'Enter') editingTodo = null })
+              }>
+            </li>
+          `, (todo) => todo, compareArrays)}
+        </ul>
+      </section>
+
+      <footer class="footer">
+        <span class="todo-count">
+          <strong>${text(() => todos.filter((x) => !x.done).length)}</strong> item left
+        </span>
+        
+        <ul class="filters">
+          <li>
+            <a ${ref()
+              .property('href', () => LOCATION_ALL)
+              .class('selected', () => !location.hash || location.hash === LOCATION_ALL)
+            }>
+              All
+            </a>
           </li>
-        `, (todo) => todo, compareArrays)
-      }></ul>
-    </section>
+          <li>
+            <a ${ref()
+              .property('href', () => LOCATION_ACTIVE)
+              .class('selected', () => location.hash === LOCATION_ACTIVE)
+            }>
+              Active
+            </a>
+          </li>
+          <li>
+            <a ${ref()
+              .property('href', () => LOCATION_COMPLETED)
+              .class('selected', () => location.hash === LOCATION_COMPLETED)
+            }>
+              Completed
+            </a>
+          </li>
+        </ul>
 
-    <footer class="footer" ${ref()
-      .style('display', () => !todos.length ? 'none' : null)
-    }>
-      <span class="todo-count">
-        <strong ${ref().property('innerText', () => todos.filter((x) => !x.done).length)}></strong> item left
-      </span>
-      
-      <ul class="filters">
-        <li>
-          <a ${ref()
-            .property('href', () => LOCATION_ALL)
-            .class('selected', () => !location.hash || location.hash === LOCATION_ALL)
-          }>
-            All
-          </a>
-        </li>
-        <li>
-          <a ${ref()
-            .property('href', () => LOCATION_ACTIVE)
-            .class('selected', () => location.hash === LOCATION_ACTIVE)
-          }>
-            Active
-          </a>
-        </li>
-        <li>
-          <a ${ref()
-            .property('href', () => LOCATION_COMPLETED)
-            .class('selected', () => location.hash === LOCATION_COMPLETED)
-          }>
-            Completed
-          </a>
-        </li>
-      </ul>
-
-      <button class="clear-completed" ${ref()
-        .style('display', () => todos.some((x) => x.done) ? null : 'none')
-        .on('click', () => todos = todos.filter((x) => !x.done))
-      }>
-        Clear completed
-      </button>
-    </footer>
+        ${iffy(() => todos.some((x) => x.done), () => `
+          <button class="clear-completed" ${ref().on('click', () => todos = todos.filter((x) => !x.done))}>
+            Clear completed
+          </button>    
+        `)}
+      </footer>
+    `)}
   </section>
 
   <footer class="info">

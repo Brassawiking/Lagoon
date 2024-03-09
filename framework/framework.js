@@ -1,6 +1,9 @@
 let refIdGenerator = 0
 export const debugRefCounter = () => refIdGenerator
 
+let templateIdGenerator = 0
+export const debugTemplateCounter = () => templateIdGenerator
+
 let liveWatchers = 0
 let liveQueue = []
 requestAnimationFrame(function processLiveQueue() {
@@ -13,13 +16,10 @@ requestAnimationFrame(function processLiveQueue() {
 })
 export const debugLiveWatchers = () => liveWatchers
 
-const repeatTemplate = document.createElement('template')
-const validateRepeatSingleRoot = (children) => children.length > 1 && console.error('Repeat does not support multiple roots in render function, remaining roots omitted!')
-
-export const ref = () => {
+export const ref = (node) => {
   const callbacks = []
   const api = {
-    ref: (callback) => {
+    node: (callback) => {
       callbacks.push(callback)
       return api
     },
@@ -52,43 +52,9 @@ export const ref = () => {
       return api
     },
 
-    repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, compareFunc) => {
-      api.set((el, items) => {
-        const currentChildren = Array.from(el.children)
-      
-        for (let index = 0 ; index < items.length ; ++index) {
-          const item = items[index]
-          const key = keyFunc(item, index)
-          const currentElementIndex = currentChildren.findIndex(x => x._key === key)
-          let element
-      
-          if (currentElementIndex < 0) {
-            if (el instanceof SVGElement) {
-              repeatTemplate.innerHTML = `<svg>${renderFunc(item, index)}</svg>`
-              element = repeatTemplate.content.children[0].children[0]
-              validateRepeatSingleRoot(repeatTemplate.content.children[0].children)
-            } else {
-              repeatTemplate.innerHTML = renderFunc(item, index)
-              element = repeatTemplate.content.children[0]
-              validateRepeatSingleRoot(repeatTemplate.content.children)
-            }
-            element._key = key
-          } else {
-            element = currentChildren.splice(currentElementIndex, 1)[0]
-          }
-          el.insertBefore(element, el.children[index])
-        }
-      
-        for (let i = 0 ; i < currentChildren.length ; ++i) {
-          currentChildren[i].remove()
-        }
-      }, valueFunc, compareFunc)
-      return api
-    },
-
     // TODO: Make "on" set based instead so you can change or remove the event listener dynamically
     on: (type, callback, options = {}) => {
-      api.ref((el) => el.addEventListener(type, (event) => callback(event, el), options))
+      api.node((el) => el.addEventListener(type, (event) => callback(event, el), options))
       return api
     },
 
@@ -112,19 +78,35 @@ export const ref = () => {
       return api
     },
 
+    done: () => {
+      if (!node) {
+        console.error('Called .done() without explict node reference!')
+        return
+      }
+
+      for (let i = 0 ; i < callbacks.length ; ++i) {
+        callbacks[i](node)
+      }
+    },
+
     toString: () => {
+      if (node) {
+        console.error('Used deferred referencing with explicit node reference!')
+        return ''
+      }
+
       const refAttribute = `_ref_${++refIdGenerator}_`
 
       queueMicrotask(() => {
-        const el = document.querySelector(`[${refAttribute}]`)
-        if (!el) {
+        const element = document.querySelector(`[${refAttribute}]`)
+        if (!element) {
           console.error('Element could not be found during referencing!')
           return
         }
-        el.removeAttribute(refAttribute)
+        element.removeAttribute(refAttribute)
 
         for (let i = 0 ; i < callbacks.length ; ++i) {
-          callbacks[i](el)
+          callbacks[i](element)
         }
       })
     
@@ -134,6 +116,171 @@ export const ref = () => {
 
   return api
 }
+
+const renderTemplate = document.createElement('template')
+const validateRepeatRenderingSingleRoot = (children) => children.length > 1 && console.error('Repeat does not support multiple roots in render function, remaining roots omitted!')
+
+// TODO: Revise template code structure (keeping this internal for now)
+const template = () => {
+  const callbacks = []
+  const api = {
+    insert: (callback) => {
+      callbacks.push(callback)
+      return api
+    },
+
+    text: (valueFunc) => {
+      callbacks.push((insert) => {
+        ref(insert(document.createTextNode('')))
+          .set((node, value) => node.textContent = value, valueFunc)
+          .done()
+      })
+      return api
+    },
+
+    conditional: (valueFunc, renderFunc) => {
+      callbacks.push((insert) => {
+        const startNode = insert(document.createTextNode(''))
+        const endNode = insert(document.createTextNode(''))
+
+        ref(startNode)
+          .set(
+            (_, value) => {
+              const currentContent = []
+              
+              let contentNode = startNode
+              while ((contentNode = contentNode.nextSibling) != endNode) {
+                if (contentNode == null) {
+                  console.error('Conditional end point is missing!')
+                  return
+                }
+                currentContent.push(contentNode)
+              }
+
+              for (let i = 0 ; i < currentContent.length ; ++i) {
+                currentContent[i].remove()
+              }
+
+              let elements
+              const parentElement = startNode.parentNode
+              if (parentElement instanceof SVGElement) {
+                renderTemplate.innerHTML = `<svg>${renderFunc(value)}</svg>`
+                elements = Array.from(renderTemplate.content.children[0].children)
+              } else {
+                renderTemplate.innerHTML = renderFunc(value)
+                elements = Array.from(renderTemplate.content.children)
+              }
+
+              for (let i = 0 ; i < elements.length ; ++i) {
+                parentElement.insertBefore(elements[i], endNode)
+              }
+            }, 
+            valueFunc
+          )
+          .done()
+      })
+      return api
+    },
+
+    if: (valueFunc, renderFunc) => {
+      api.conditional(valueFunc, (value) => value ? renderFunc() : '')
+      return api
+    },
+
+    // TODO: Support for multiple render roots by using text nodes as markers
+    repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, compareFunc) => {
+      callbacks.push((insert) => {
+        const startNode = insert(document.createTextNode(''))
+        const endNode = insert(document.createTextNode(''))
+
+        ref(startNode)
+          .set(
+            (_, items) => {
+              const currentContent = []
+              
+              let contentNode = startNode
+              while ((contentNode = contentNode.nextSibling) != endNode) {
+                if (contentNode == null) {
+                  console.error('Repeat end point is missing!')
+                  return
+                }
+                currentContent.push(contentNode)
+              }
+              
+              const parentElement = startNode.parentNode
+              for (let index = 0 ; index < items.length ; ++index) {
+                const item = items[index]
+                const key = keyFunc(item, index)
+                const currentElementIndex = currentContent.findIndex(x => x._key === key)
+                let element
+            
+                if (currentElementIndex < 0) {
+                  if (parentElement instanceof SVGElement) {
+                    renderTemplate.innerHTML = `<svg>${renderFunc(item, index)}</svg>`
+                    element = renderTemplate.content.children[0].children[0]
+                    validateRepeatRenderingSingleRoot(renderTemplate.content.children[0].children)
+                  } else {
+                    renderTemplate.innerHTML = renderFunc(item, index)
+                    element = renderTemplate.content.children[0]
+                    validateRepeatRenderingSingleRoot(renderTemplate.content.children)
+                  }
+                  element._key = key
+                } else {
+                  element = currentContent.splice(currentElementIndex, 1)[0]
+                }
+                parentElement.insertBefore(element, endNode)
+              }
+            
+              for (let i = 0 ; i < currentContent.length ; ++i) {
+                currentContent[i].remove()
+              }
+            },
+            valueFunc,
+            compareFunc
+          )
+          .done()
+      })
+      return api
+    },
+
+    toString: () => {
+      const templateId = `_template_${++templateIdGenerator}_`
+
+      queueMicrotask(() => {
+        const commentIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT);
+
+        let insertionPoint
+        let currentComment
+        while (currentComment = commentIterator.nextNode()) {
+          if (currentComment.textContent === templateId)  {
+            insertionPoint = currentComment
+            break
+          }
+        }
+
+        if (!insertionPoint) {
+          console.error('Insertion point could not be found during templating!')
+          return
+        }
+
+        const insert = (node) => insertionPoint.parentNode.insertBefore(node, insertionPoint)
+        for (let i = 0 ; i < callbacks.length ; ++i) {
+          callbacks[i](insert)
+        }
+
+        insertionPoint.remove()
+      })
+    
+      return `<!--${templateId}-->`
+    }
+  }
+
+  return api
+}
+
+export const text = (...args) => template().text(...args)
+export const iffy = (...args) => template().if(...args)
+export const repeat = (...args) => template().repeat(...args)
 
 // Helpers
 export const compareArrays = (a, b) => a === b || (a?.length === b?.length && a.every((element, index) => element === b[index]))
