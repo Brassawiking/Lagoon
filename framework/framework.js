@@ -125,7 +125,7 @@ const validateRepeatRenderingSingleRoot = (children) => children.length > 1 && c
 const template = () => {
   const callbacks = []
   const api = {
-    insert: (callback) => {
+    modify: (callback) => {
       callbacks.push(callback)
       return api
     },
