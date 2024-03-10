@@ -73,24 +73,43 @@ body {
       display: flex; 
       flex-direction: column; 
       gap: 10px;
-    }
-  
-    .tile-palette {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 10px;
-    
-      .preview {
-        display: flex; 
-        flex-direction: column;
-        outline-offset: 2px;
-    
-        &:hover {
-          outline: 1px solid #f1c40f;
+
+      label {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+
+        input {
+          width: 50%;
         }
-    
-        &.selected {
-          outline: 3px solid #f1c40f;
+      }
+
+      .tile-palette {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px;
+      
+        .preview {
+          display: flex; 
+          flex-direction: column;
+          outline-offset: 2px;
+          user-select: none;
+          overflow-wrap: anywhere;
+          font-size: 12px;
+          font-family: monospace;
+          justify-content: flex-end;
+      
+          &:hover {
+            outline: 1px solid #f1c40f;
+          }
+      
+          &.selected {
+            outline: 3px solid #f1c40f;
+          }
+  
+          img {
+            image-rendering: pixelated;
+          }
         }
       }
     }

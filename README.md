@@ -8,10 +8,8 @@ https://brassawiking.github.io/Lagoon/
 ## Milestones
 
 ### Content
-- [ ] Place out all original maps with roughly correct size
-  - 7 / 75 done
 - [ ] Roughly block out all original maps 
-  - 6 / 75 done
+  - 11 / 75 done
 
 ### Editor
 - [x] Basic editing to create and block out maps

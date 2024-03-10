@@ -20,6 +20,8 @@ let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 window.x = data
 
+// TODO: Validate data
+
 const tileImages = await Promise.all(
   data.tiles.map(x => 
     new Promise(resolve => {
@@ -227,7 +229,7 @@ document.querySelector('#app').innerHTML = `
 
         <div>
           <div>View origin: ${text(() => viewOriginX)}, ${text(() => viewOriginY)}</div>
-          <div>Zoom: ${text(() => viewZoom)}</div>
+          <div>Zoom: ${text(() => viewZoom)}%</div>
           <div>[Debug] Used refs: ${text(() => debugRefCounter())}</div>
           <div>[Debug] Used templates: ${text(() => debugTemplateCounter())}</div>
           <div>[Debug] Live watchers: ${text(() => debugLiveWatchers())}</div>
@@ -249,7 +251,7 @@ document.querySelector('#app').innerHTML = `
 
             <label>
               Width:
-              <input type="number" step="0" min="1" ${ref()
+              <input type="number" min="1" ${ref()
                 .property('value', () => currentMap.width)
                 .on('change', (event) => updateMapSize(parseInt(event.target.value) || 1, currentMap.height))
               }/>
@@ -257,7 +259,7 @@ document.querySelector('#app').innerHTML = `
 
             <label>
               Height:
-              <input type="number" step="0" min="1" ${ref()
+              <input type="number" min="1" ${ref()
                 .property('value', () => currentMap.height)
                 .on('change', (event) => updateMapSize(currentMap.width, parseInt(event.target.value) || 1))
               }/>
@@ -267,6 +269,18 @@ document.querySelector('#app').innerHTML = `
             <div>Y: ${text(() => currentMap.y)}</div>
           </div>
           
+          <label>
+            Fill tile index:
+            <input type="number" min="0" value="0" ${ref()
+              .property('max', () => data.tiles.length - 1)
+              .on('keypress', (event) =>  { 
+                if (event.key === 'Enter') {
+                  currentMap.tilemap = currentMap.tilemap.map(x => x == event.target.value ? currentPaintingTile : x)
+                } 
+              })
+            }>
+          </label>
+
           <button ${ref().on('click', copyMap)}>
             Copy map
           </button>
@@ -281,19 +295,19 @@ document.querySelector('#app').innerHTML = `
         <legend>Tiles</legend>
 
         <div class="tile-palette"> 
-          ${repeat(() => data.tiles, (tile, index) => `
+          ${repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
             <div class="preview" ${ref()
-              .class('selected', () => index === currentPaintingTile)
-              .on('click', () => currentPaintingTile = index)
+              .class('selected', () => tile === data.tiles[currentPaintingTile])
+              .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
             }>
               <div>
-                ${text(() => tile.image.split('.').at(0).split('/').at(-1))}
+                ${text(() => `${tile.image.split('.').at(0).split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
               </div>
-              <img style="image-rendering: pixelated;" ${ref()
+              <img draggable="false" ${ref()
                 .property('src', () => tile.image)
               }/>
             </div>
-          `)}
+          `, undefined, compareArrays)}
         </div>
       </fieldset>
     </div>
