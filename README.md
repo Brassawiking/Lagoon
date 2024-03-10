@@ -14,6 +14,7 @@ https://brassawiking.github.io/Lagoon/
 ### Editor
 - [x] Basic editing to create and block out maps
 - [x] Canvas based rendering for maps
+- [ ] Multiple tile layers in maps
 
 ### Feppla (Framework)
 - [x] Full page static render
