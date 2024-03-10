@@ -16,7 +16,7 @@ requestAnimationFrame(function processLiveQueue() {
 })
 export const debugLiveWatchers = () => liveWatchers
 
-export const ref = (node) => {
+export const ref = (explicitNode) => {
   const callbacks = []
   const api = {
     node: (callback) => {
@@ -79,18 +79,18 @@ export const ref = (node) => {
     },
 
     done: () => {
-      if (!node) {
+      if (!explicitNode) {
         console.error('Called .done() without explict node reference!')
         return
       }
 
       for (let i = 0 ; i < callbacks.length ; ++i) {
-        callbacks[i](node)
+        callbacks[i](explicitNode)
       }
     },
 
     toString: () => {
-      if (node) {
+      if (explicitNode) {
         console.error('Used deferred referencing with explicit node reference!')
         return ''
       }
@@ -98,15 +98,15 @@ export const ref = (node) => {
       const refAttribute = `_ref_${++refIdGenerator}_`
 
       queueMicrotask(() => {
-        const element = document.querySelector(`[${refAttribute}]`)
-        if (!element) {
-          console.error('Element could not be found during referencing!')
+        const implicitNode = document.querySelector(`[${refAttribute}]`)
+        if (!implicitNode) {
+          console.error('Implicit node could not be found during referencing!')
           return
         }
-        element.removeAttribute(refAttribute)
+        implicitNode.removeAttribute(refAttribute)
 
         for (let i = 0 ; i < callbacks.length ; ++i) {
-          callbacks[i](element)
+          callbacks[i](implicitNode)
         }
       })
     
@@ -120,9 +120,7 @@ export const ref = (node) => {
 const renderTemplate = document.createElement('template')
 const validateRepeatRenderingSingleRoot = (children) => children.length > 1 && console.error('Repeat does not support multiple roots in render function, remaining roots omitted!')
 
-// TODO: Revise template code structure (keeping this internal for now)
-// TODO: Support explicit insertion point?
-const template = () => {
+export const template = (explicitInsertionPoint) => {
   const callbacks = []
   const api = {
     modify: (callback) => {
@@ -131,7 +129,7 @@ const template = () => {
     },
 
     text: (valueFunc) => {
-      callbacks.push((insert) => {
+      api.modify((insert) => {
         ref(insert(document.createTextNode('')))
           .set((node, value) => node.textContent = value, valueFunc)
           .done()
@@ -141,7 +139,7 @@ const template = () => {
 
     // TODO: Remove in favor of repeat as basis instead?
     conditional: (valueFunc, renderFunc) => {
-      callbacks.push((insert) => {
+      api.modify((insert) => {
         const startNode = insert(document.createTextNode(''))
         const endNode = insert(document.createTextNode(''))
 
@@ -186,7 +184,7 @@ const template = () => {
 
     // TODO: Support for multiple render roots by using text nodes as markers
     repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, compareFunc) => {
-      callbacks.push((insert) => {
+      api.modify((insert) => {
         const startNode = insert(document.createTextNode(''))
         const endNode = insert(document.createTextNode(''))
 
@@ -246,32 +244,49 @@ const template = () => {
       return api
     },
 
+    done: () => {
+      if (!explicitInsertionPoint) {
+        console.error('Called .done() without explict insertion point!')
+        return
+      }
+
+      const insert = (node) => explicitInsertionPoint.parentNode.insertBefore(node, explicitInsertionPoint)
+      for (let i = 0 ; i < callbacks.length ; ++i) {
+        callbacks[i](insert)
+      }
+    },
+
     toString: () => {
+      if (explicitInsertionPoint) {
+        console.error('Used deferred templating with explicit insertion point!')
+        return ''
+      }
+
       const templateId = `_template_${++templateIdGenerator}_`
 
       queueMicrotask(() => {
         const commentIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT);
 
-        let insertionPoint
+        let implicitInsertionPoint
         let currentComment
         while (currentComment = commentIterator.nextNode()) {
           if (currentComment.textContent === templateId)  {
-            insertionPoint = currentComment
+            implicitInsertionPoint = currentComment
             break
           }
         }
 
-        if (!insertionPoint) {
-          console.error('Insertion point could not be found during templating!')
+        if (!implicitInsertionPoint) {
+          console.error('Implicit insertion point could not be found during templating!')
           return
         }
 
-        const insert = (node) => insertionPoint.parentNode.insertBefore(node, insertionPoint)
+        const insert = (node) => implicitInsertionPoint.parentNode.insertBefore(node, implicitInsertionPoint)
         for (let i = 0 ; i < callbacks.length ; ++i) {
           callbacks[i](insert)
         }
 
-        insertionPoint.remove()
+        implicitInsertionPoint.remove()
       })
     
       return `<!--${templateId}-->`

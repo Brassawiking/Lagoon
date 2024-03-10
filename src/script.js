@@ -122,6 +122,10 @@ const updateMapSize = (width, height) => {
   currentMap.tilemap = newTilemap
 }
 
+ref(document)
+  .property('title', () => [currentMap?.name, 'Lagoon'].filter(x => x).join(' | '))
+  .done()
+
 document.querySelector('#app').innerHTML = `
   <div class="world-editor">
     <div class="view" ${ref()
