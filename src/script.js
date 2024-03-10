@@ -1,4 +1,4 @@
-import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../framework/framework.js'
+import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../feppla/feppla.js'
 import { clamp, mouseDrag } from './utils.js'
 import rawData from '../data/data.json' assert { type: 'json' }
 

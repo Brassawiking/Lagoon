@@ -17,7 +17,7 @@ https://brassawiking.github.io/Lagoon/
 - [x] Basic editing to create and block out maps
 - [x] Canvas based rendering for maps
 
-### Framework
+### Feppla (Framework)
 - [x] Full page static render
   - => .innerHTML
 - [x] Full page static render with data 

@@ -1,4 +1,4 @@
-import { ref, compareArrays, text, iffy, repeat } from '../framework.js'
+import { ref, compareArrays, text, iffy, repeat } from '../feppla.js'
 
 let todos = []
 let editingTodo
