@@ -29625,8 +29625,8 @@
       "name": "Gold cave floor 2",
       "width": 96,
       "height": 77,
-      "x": 58,
-      "y": -135,
+      "x": -140,
+      "y": -179,
       "tilemap": [
         5,
         5,
@@ -37518,8 +37518,8 @@
       "name": "Gold cave passage 2",
       "width": 18,
       "height": 13,
-      "x": 146,
-      "y": -150,
+      "x": -52,
+      "y": -194,
       "tilemap": [
         13,
         13,
@@ -37761,8 +37761,8 @@
       "name": "Gold cave floor 3",
       "width": 48,
       "height": 47,
-      "x": 139,
-      "y": -199,
+      "x": -32,
+      "y": -211,
       "tilemap": [
         8,
         8,
