@@ -8,23 +8,31 @@ const LOCATION_ACTIVE = '#/active'
 const LOCATION_COMPLETED = '#/completed' 
 
 let currentFilter
+let currentFilterName
 const updateFilter = () => {
   switch(location.hash) {
     default:
     case LOCATION_ALL:
       currentFilter = (todo) => todo
+      currentFilterName = 'All tasks'
       break
     case LOCATION_ACTIVE:
       currentFilter = (todo) => !todo.done
+      currentFilterName = 'Active tasks'
       break
     case LOCATION_COMPLETED:
       currentFilter = (todo) => todo.done
+      currentFilterName = 'Completed tasks'
       break
   }
 }
 
 updateFilter()
 window.addEventListener('hashchange', updateFilter)
+
+ref(document)
+  .property('title', () => [todos.length && currentFilterName, 'Feppla', 'TodoMVC'].filter(x => x).join(' • '))
+  .done()
 
 document.querySelector('#app').innerHTML = `
   <section class="todoapp">
