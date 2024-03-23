@@ -4,6 +4,7 @@ https://brassawiking.github.io/Lagoon/
 
 ## Bugs
 - Paint tool can bleed into wrong index at the edges
+- Empty tile is different shade then door passage
 
 ## Milestones
 
