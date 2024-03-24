@@ -8,7 +8,7 @@ https://brassawiking.github.io/Lagoon/
 
 ### Content
 - [ ] Roughly block out all original maps 
-  - 16 / 75 done
+  - 16 / 74 done
 
 ### Editor
 - [x] Basic editing to create and block out maps
