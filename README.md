@@ -3,7 +3,6 @@
 https://brassawiking.github.io/Lagoon/
 
 ## Bugs
-- Paint tool can bleed into wrong index at the edges
 
 ## Milestones
 

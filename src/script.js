@@ -20,7 +20,13 @@ let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 window.x = data
 
-// TODO: Validate data
+data.maps.forEach(map => {
+  const mapSize = map.width * map.height
+  if (map.tilemap.length !== mapSize) {
+    console.log(`Map "${map.name}" has invalid tilemap size, fixing automatically.`)
+    map.tilemap.length = mapSize
+  }
+})
 
 const tileImages = await Promise.all(
   data.tiles.map(x => 
@@ -124,6 +130,21 @@ const updateMapSize = (width, height) => {
   currentMap.tilemap = newTilemap
 }
 
+const handlePaint = (event, map) => {
+  if (currentMap !== map || currentTool !== TOOL_PAINT) {
+    return
+  }
+  
+  const index = 
+    clamp(Math.floor(event.offsetX / TILE_SIZE), 0, map.width-1) 
+    + clamp(Math.floor(event.offsetY / TILE_SIZE), 0, map.height-1) * map.width
+
+  if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
+    event.stopPropagation()
+    map.tilemap[index] = currentPaintingTile
+  }
+}
+
 ref(document)
   .property('title', () => [currentMap?.name, 'Lagoon'].filter(x => x).join(' | '))
   .done()
@@ -155,27 +176,11 @@ document.querySelector('#app').innerHTML = `
               ${text(() => map.name)}
             </div>
             <canvas class="tiles" ${ref()
-              .on('pointerdown', (event) => {
-                if (currentMap !== map || currentTool !== TOOL_PAINT) {
-                  return
-                }
-                const index = Math.floor(event.offsetX / TILE_SIZE) + Math.floor(event.offsetY / TILE_SIZE) * map.width
-                if (event.button === MOUSE_LEFT_BUTTON) {
-                  event.stopPropagation()
-                  map.tilemap[index] = currentPaintingTile
-                }
-              })
+              .on('pointerdown', (event) => handlePaint(event, map))
               .on('pointermove', (originalEvent) => {
-                if (currentMap !== map || currentTool !== TOOL_PAINT) {
-                  return
-                }
                 const events = originalEvent.getCoalescedEvents()
                 for (let i = 0 ; i < events.length ; ++i) {
-                  const event = events[i]
-                  const index = Math.floor(event.offsetX / TILE_SIZE) + Math.floor(event.offsetY / TILE_SIZE) * map.width
-                  if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
-                    map.tilemap[index] = currentPaintingTile
-                  }
+                  handlePaint(events[i], map)
                 }
               })
               .set((canvas) => {

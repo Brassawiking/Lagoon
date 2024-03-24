@@ -69,6 +69,7 @@ body {
     flex-direction: column; 
     gap: 20px;
     padding: 20px;
+    padding-right: 12px;
     overflow-y: scroll;
     background: #000;
     border: 2px solid #fff;
@@ -76,8 +77,13 @@ body {
     color: #fff;
     text-shadow: 1px 0 #666, 2px 0 #666;
     scrollbar-width: thin;
-    scrollbar-color: #666 transparent;
+    scrollbar-color: transparent transparent;
     font-family: monospace;
+
+    transition-duration: 200ms;
+    &:hover {
+      scrollbar-color: #666 transparent;
+    }
 
     fieldset {
       display: flex; 
