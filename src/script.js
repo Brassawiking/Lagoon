@@ -36,7 +36,7 @@ const tileImages = await Promise.all(
 
 const handleWheelZoom = (event) => {
   event.preventDefault();
-  const delta = Math.sign(-event.deltaY) * 10
+  const delta = Math.sign(-event.deltaY) * 5
   viewZoom = clamp(viewZoom + delta, 10, 400)
 }
 
@@ -204,7 +204,7 @@ document.querySelector('#app').innerHTML = `
         <legend>Toolbar</legend>
 
         <div>
-          Current tool: ${text(() => currentTool)}
+          Current tool: <span style="color: gold;">${text(() => currentTool)}</span>
         </div>
 
         <button ${ref().on('click', () => currentTool = TOOL_MOVE)}>
@@ -227,13 +227,33 @@ document.querySelector('#app').innerHTML = `
       <fieldset>
         <legend>Info</legend>
 
-        <div>
-          <div>View origin: ${text(() => viewOriginX)}, ${text(() => viewOriginY)}</div>
-          <div>Zoom: ${text(() => viewZoom)}%</div>
-          <div>[Debug] Used refs: ${text(() => debugRefCounter())}</div>
-          <div>[Debug] Used templates: ${text(() => debugTemplateCounter())}</div>
-          <div>[Debug] Live watchers: ${text(() => debugLiveWatchers())}</div>
-        </div>
+        <table>
+          <tr>
+            <th>View origin</th>
+            <th>:</th>
+            <td>${text(() => viewOriginX)}, ${text(() => viewOriginY)}</td>
+          </tr>
+          <tr>
+            <th>Zoom</th>
+            <th>:</th>
+            <td>${text(() => viewZoom)}%</td>
+          </tr>
+          <tr>
+            <th>[Debug] Used refs</th>
+            <th>:</th>
+            <td>${text(() => debugRefCounter())}%</td>
+          </tr>
+          <tr>
+            <th>[Debug] Used templates</th>
+            <th>:</th>
+            <td>${text(() => debugTemplateCounter())}%</td>
+          </tr>
+          <tr>
+            <th>[Debug] Live watchers</th>
+            <th>:</th>
+            <td>${text(() => debugLiveWatchers())}%</td>
+          </tr>
+        </table>
       </fieldset>
 
       ${iffy(() => currentMap, () => `

@@ -4,13 +4,12 @@ https://brassawiking.github.io/Lagoon/
 
 ## Bugs
 - Paint tool can bleed into wrong index at the edges
-- Empty tile is different shade then door passage
 
 ## Milestones
 
 ### Content
 - [ ] Roughly block out all original maps 
-  - 12 / 75 done
+  - 16 / 75 done
 
 ### Editor
 - [x] Basic editing to create and block out maps
