@@ -1,15 +1,104 @@
 body {
-  background: #666;
+  background: #333;
   margin: 0;
+  height: 100vh;
+
+  font-family: monospace;
+  text-shadow: 1px 0 #666, 2px 0 #666;
+  color: #fff;
+}
+
+#app {
+  height: 100%
+}
+
+.text-normal {
+  font-family: monospace;
+  text-shadow: 1px 0 #666, 2px 0 #666;
+  color: #fff;
+}
+
+.text-active {
+  font-family: monospace;
+  text-shadow: 1px 0 #666, 2px 0 #666;
+  color: gold;
+}
+
+.text-inactive {
+  font-family: monospace;
+  text-shadow: 1px 0 #666, 2px 0 #666;
+  color: #666;
+}
+
+button {
+  border-radius: 2px;
+  font: inherit;
+  text-transform: uppercase;
+  background: #8c9652;
+  color: #fff;
+  border: none;
+  text-shadow: 1px 1px #4a5121, 2px 2px #4a5121;
+  outline: 1px solid #4a5121;
+  outline-offset: -2px;
+  padding: 4px 8px;
+  line-height: 16px;
+
+  &:hover {
+    background: #717943;
+  }
+
+  &:active {
+    background: #646b3b;
+  }
+}
+
+.dialog {
+  padding: 8px;
+  background: #000;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #000, 4px 4px 0 0 #000;
+}
+
+fieldset {
+  border: 1px solid;
+  border-color: transparent #fff;
+  border-radius: 12px;
+}
+
+.main-menu {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+
+  display: flex;
+  flex-direction: column; 
+  gap: 8px;
+  z-index: 10;
+
+  .item {
+    text-transform: uppercase;
+    color: #666;
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &.selected {
+      color: gold;
+    }
+  }
+}
+
+.game {
+  padding: 20px 100px;
 }
 
 .world-editor {
   box-sizing: border-box;
-  height: 100vh;
-  position: relative;
+  height: 100%;
 
   .view {
-    background: #333;
     position: relative;
     overflow: hidden;
     height: 100%;
@@ -59,7 +148,7 @@ body {
   }
   
   .controls {
-    position: absolute;
+    position: fixed;
     top: 16px;
     bottom: 16px;
     right: 16px;
@@ -89,30 +178,6 @@ body {
       display: flex; 
       flex-direction: column; 
       gap: 10px;
-      border: 1px solid;
-      border-color: #000 #fff;
-      border-radius: 12px;
-
-      button {
-        border-radius: 2px;
-        font: inherit;
-        text-transform: uppercase;
-        background: #8c9652;
-        color: #fff;
-        border: none;
-        text-shadow: 1px 1px #4a5121, 2px 2px #4a5121;
-        outline: 1px solid #4a5121;
-        outline-offset: -2px;
-        padding: 4px;
-
-        &:hover {
-          background: #717943;
-        }
-
-        &:active {
-          background: #646b3b;
-        }
-      }
 
       table {
         th {
@@ -180,3 +245,8 @@ body {
   }
 }
 
+.design {
+  padding: 20px 100px;
+  max-width: 1024px;
+  margin: auto;
+}

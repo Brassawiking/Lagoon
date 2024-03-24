@@ -1,6 +1,6 @@
-import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../feppla/feppla.js'
-import { clamp, mouseDrag } from './utils.js'
-import rawData from '../data/data.json' assert { type: 'json' }
+import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
+import { clamp, mouseDrag } from '../utils.js'
+import rawData from '../../data/data.json' assert { type: 'json' }
 
 const MOUSE_LEFT_BUTTON = 0
 const MOUSE_MIDDLE_BUTTON = 1
@@ -145,11 +145,7 @@ const handlePaint = (event, map) => {
   }
 }
 
-ref(document)
-  .property('title', () => [currentMap?.name, 'Lagoon'].filter(x => x).join(' | '))
-  .done()
-
-document.querySelector('#app').innerHTML = `
+export const Editor = () => `
   <div class="world-editor">
     <div class="view" ${ref()
       .on('click', () => currentMap = null)

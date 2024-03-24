@@ -244,6 +244,11 @@ export const template = (explicitInsertionPoint) => {
       return api
     },
 
+    switch: (valueFunc, renderFuncs) => {
+      api.conditional(valueFunc, (value) => renderFuncs[value]?.() || '')
+      return api
+    },
+
     done: () => {
       if (!explicitInsertionPoint) {
         console.error('Called .done() without explict insertion point!')
@@ -299,6 +304,7 @@ export const template = (explicitInsertionPoint) => {
 export const text = (...args) => template().text(...args)
 export const iffy = (...args) => template().if(...args)
 export const repeat = (...args) => template().repeat(...args)
+export const switchy = (...args) => template().switch(...args)
 
 // Helpers
 export const compareArrays = (a, b) => a === b || (a?.length === b?.length && a.every((element, index) => element === b[index]))
