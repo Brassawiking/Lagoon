@@ -202,7 +202,7 @@ export const Editor = () => `
         <legend>Toolbar</legend>
 
         <div>
-          Current tool: <span style="color: gold;">${text(() => currentTool)}</span>
+          Current tool: <span style="color: #ffff00;">${text(() => currentTool)}</span>
         </div>
 
         <button ${ref().on('click', () => currentTool = TOOL_MOVE)}>
@@ -235,6 +235,11 @@ export const Editor = () => `
             <th>Zoom</th>
             <th>:</th>
             <td>${text(() => viewZoom)}%</td>
+          </tr>
+          <tr>
+            <th>Number of maps</th>
+            <th>:</th>
+            <td>${text(() => data.maps.length)} (${text(() => Math.round(100 * data.maps.length / 74))}%)</td>
           </tr>
           <tr>
             <th>[Debug] Used refs</th>

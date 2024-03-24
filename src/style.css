@@ -25,7 +25,7 @@ body {
 .text-active {
   font-family: monospace;
   text-shadow: 1px 0 #666, 2px 0 #666;
-  color: gold;
+  color: #ffff00;
 }
 
 .text-inactive {
@@ -67,6 +67,12 @@ fieldset {
   border: 1px solid;
   border-color: transparent #fff;
   border-radius: 12px;
+
+  legend {
+    text-shadow: none;
+    text-transform: uppercase;
+    color: #666;
+  }
 }
 
 .main-menu {
@@ -89,7 +95,7 @@ fieldset {
     }
 
     &.selected {
-      color: gold;
+      color: #ffff00;
     }
   }
 }

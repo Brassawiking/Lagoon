@@ -6,7 +6,7 @@
   overflow: hidden;
 
   &:focus {
-    outline: 2px solid gold;
+    outline: 2px solid #ffff00;
     outline-offset: -2px;
   }
 

@@ -95,7 +95,7 @@
 
         td {
           text-align: right;
-          color: gold;
+          color: #ffff00;
         }
       }
 
@@ -107,7 +107,7 @@
         input {
           width: 50%;
           background: none;
-          color: gold;
+          color: #ffff00;
           font-family: monospace;
           border: none;
           border-bottom: 1px solid #fff;
@@ -137,7 +137,7 @@
       
           &.selected {
             outline: 3px groove #f00;
-            color: gold;
+            color: #ffff00;
           }
   
           img {
