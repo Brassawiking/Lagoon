@@ -1,64 +1,60 @@
-import { ref, switchy } from '../feppla/feppla.js'
+import { ref, repeat, conditional, text } from '../feppla/feppla.js'
 
 import { Game } from './view/Game.js'
 import { Editor } from './view/Editor.js'
 import { Design } from './view/Design.js'
 
-const LOCATION_GAME = '#/game'
-const LOCATION_EDITOR = '#/editor'
-const LOCATION_DESIGN = '#/design' 
-
-let currentRouteName
-const updateRoute = () => {
-  switch(location.hash) {
-    case LOCATION_GAME:
-      currentRouteName = 'Game'
-      break
-    case LOCATION_EDITOR:
-      currentRouteName = 'Editor'
-      break
-    case LOCATION_DESIGN:
-      currentRouteName = 'Design'
-      break
-    default:
-      location.hash = LOCATION_EDITOR
+const routes = [
+  {
+    path: '/game',
+    name: 'Game',
+    view: Game
+  },
+  {
+    path: '/editor',
+    name: 'Editor',
+    view: Editor
+  },
+  {
+    path: '/design',
+    name: 'Design',
+    view: Design
   }
+]
+
+let currentRoute
+const updateRoute = () => {
+  const currentPath = location.hash?.substring(1)
+
+  for (let i = 0 ; i < routes.length ; ++i) {
+    const route = routes[i]
+    if (route.path === currentPath) {
+      currentRoute = route
+      return
+    }
+  }
+
+  location.hash = `#${routes[0].path}`
 }
 
 updateRoute()
 window.addEventListener('hashchange', updateRoute)
 
 ref(document)
-  .property('title', () => [currentRouteName,'Lagoon'].join(' | '))
+  .property('title', () => [currentRoute?.name,'Lagoon'].join(' | '))
   .done()
 
 document.querySelector('#app').innerHTML = `
   <div class="main-menu dialog">
-    <div class="item" ${ref()
-      .class('selected', () => location.hash === LOCATION_GAME)
-      .on('click', () => location.hash = LOCATION_GAME)
-    }>
-      Game
-    </div>
-
-    <div class="item" ${ref()
-      .class('selected', () => location.hash === LOCATION_EDITOR)
-      .on('click', () => location.hash = LOCATION_EDITOR)
-    }>
-      Editor
-    </div>
-
-    <div class="item" ${ref()
-      .class('selected', () => location.hash === LOCATION_DESIGN)
-      .on('click', () => location.hash = LOCATION_DESIGN)
-    }>
-      Design
-    </div>
+    ${repeat(() => routes, (route) => `
+      <div class="item" ${ref()
+        .class('selected', () => route === currentRoute)
+        .on('click', () => location.hash = `#${route.path}`)
+      }>
+        ${text(() => route.name)}
+      </div>
+    `)}
   </div>
 
-  ${switchy(() => location.hash, {
-    [LOCATION_GAME]: Game,
-    [LOCATION_EDITOR]: Editor,
-    [LOCATION_DESIGN]: Design
-  })}
+  ${conditional(() => currentRoute, () => currentRoute.view())}
 `

@@ -27,3 +27,13 @@ export function mouseDrag(mousedownEvent, button, initCallbacks) {
     document.addEventListener('mouseup', handleMouseup)
   }
 }
+
+export function loadImage(url) {
+  return new Promise(resolve => {
+    const image = new Image(16, 16)
+    image.addEventListener('load', () => {
+      resolve(image)
+    })
+    image.src = url
+  })
+} 

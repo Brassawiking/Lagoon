@@ -305,6 +305,7 @@ export const text = (...args) => template().text(...args)
 export const iffy = (...args) => template().if(...args)
 export const repeat = (...args) => template().repeat(...args)
 export const switchy = (...args) => template().switch(...args)
+export const conditional = (...args) => template().conditional(...args)
 
 // Helpers
 export const compareArrays = (a, b) => a === b || (a?.length === b?.length && a.every((element, index) => element === b[index]))

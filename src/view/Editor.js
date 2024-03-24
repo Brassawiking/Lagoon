@@ -1,5 +1,5 @@
 import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
-import { clamp, mouseDrag } from '../utils.js'
+import { clamp, mouseDrag, loadImage } from '../utils.js'
 import rawData from '../../data/data.json' assert { type: 'json' }
 
 const MOUSE_LEFT_BUTTON = 0
@@ -29,16 +29,13 @@ data.maps.forEach(map => {
 })
 
 const tileImages = await Promise.all(
-  data.tiles.map(x => 
-    new Promise(resolve => {
-      const image = new Image(16, 16)
-      image.addEventListener('load', () => {
-        resolve(image)
-      })
-      image.src = x.image
-    })
-  )
+  data.tiles.map(x => loadImage(x.image))
 )
+
+export const resources = {
+  data,
+  tileImages
+}
 
 const handleWheelZoom = (event) => {
   event.preventDefault();
