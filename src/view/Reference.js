@@ -11,7 +11,7 @@ export const Reference = () => `
           .property('src', () => `references/maps-from-secret-place-homepage/${String(index).padStart(2, '0')}.png`)
           .on('load', (event) => {
             const width = event.target.clientWidth / 16
-            const height = event.target.clientWidth / 16
+            const height = event.target.clientHeight / 16
             event.target.parentElement.setAttribute('map-width', width)
             event.target.parentElement.setAttribute('map-height', height)
           })
