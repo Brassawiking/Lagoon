@@ -1,9 +1,22 @@
 .reference {
   padding: 20px 150px;
   margin: auto;
+  min-width: 100%;
+  box-sizing: border-box;
 
-  display: flex;
+  vertical-align: top;
+  display: inline-flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 40px;
   align-items: center;
+
+  
+  .map-reference {
+    text-align: center;
+
+    &:before {
+      display: block;
+      content: attr(map-width) ' x ' attr(map-height);
+    }
+  }
 }
