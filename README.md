@@ -3,6 +3,7 @@
 https://brassawiking.github.io/Lagoon/
 
 ## Bugs
+- No credits given for references
 
 ## Milestones
 
