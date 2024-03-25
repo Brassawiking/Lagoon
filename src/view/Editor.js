@@ -198,7 +198,7 @@ export const Editor = () => `
     </div>
 
     <div class="number-of-maps-goal">
-      Number of maps goal! ${text(() => data.maps.length)} of 74 done!
+      Number of maps goal! ${text(() => data.maps.length)} of 74 blocked out!
       <progress ${ref()
         .property('value', () => data.maps.length / 74)
       }></progress>
