@@ -1,4 +1,4 @@
-.world-editor {
+.editor {
   box-sizing: border-box;
   height: 100%;
 
@@ -51,12 +51,22 @@
     }
   }
   
+  .number-of-maps-goal {
+    position: fixed;
+    bottom: 16px;
+    left: 32px;
+    right: 408px;
+    width: auto;
+    text-align: center;
+  }
+
   .controls {
     position: fixed;
     top: 16px;
     bottom: 16px;
     right: 16px;
-    width: 320px;
+    width: 360px;
+    box-sizing: border-box;
 
     display: flex;
     flex-direction: column; 

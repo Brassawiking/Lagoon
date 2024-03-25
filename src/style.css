@@ -75,6 +75,48 @@ fieldset {
   }
 }
 
+progress {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  height: 16px;
+  align-items: center;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    width: 12px;
+    border-radius: 4px;
+    height: 12px;
+    background-clip: content-box;
+  }
+
+  &:before {
+    background-color: #cec700;
+    box-shadow: inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 #646600;
+  }
+
+  &:after {
+    background-color: #848600;
+    box-shadow: inset -1px 1px 0 0 #cec700, inset 1px -1px 0 0 #646600;
+  }
+
+  &::-webkit-progress-bar {
+    flex-grow: 1 1 auto;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 2px solid;
+    border-color: #cec700 #848600 #848600 #cec700;
+    background-color: transparent;
+  }
+
+  &::-webkit-progress-value {
+    background-color: #fff;
+  }
+}
+
 .main-menu {
   position: fixed;
   top: 16px;

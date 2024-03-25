@@ -143,7 +143,7 @@ const handlePaint = (event, map) => {
 }
 
 export const Editor = () => `
-  <div class="world-editor">
+  <div class="editor">
     <div class="view" ${ref()
       .on('click', () => currentMap = null)
       .on('mousedown', handleMousedownPan)
@@ -197,6 +197,13 @@ export const Editor = () => `
       </div>
     </div>
 
+    <div class="number-of-maps-goal">
+      Number of maps goal! ${text(() => data.maps.length)} of 74 done!
+      <progress ${ref()
+        .property('value', () => data.maps.length / 74)
+      }></progress>
+    </div>
+
     <div class="controls">
       <fieldset>
         <legend>Toolbar</legend>
@@ -235,11 +242,6 @@ export const Editor = () => `
             <th>Zoom</th>
             <th>:</th>
             <td>${text(() => viewZoom)}%</td>
-          </tr>
-          <tr>
-            <th>Number of maps</th>
-            <th>:</th>
-            <td>${text(() => data.maps.length)} (${text(() => Math.round(100 * data.maps.length / 74))}%)</td>
           </tr>
           <tr>
             <th>[Debug] Used refs</th>
