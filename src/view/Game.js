@@ -1,6 +1,6 @@
-import { ref } from "../../feppla/feppla.js"
-import { loadImage, clamp } from "../utils.js"
-import { resources } from "./Editor.js"
+import { ref } from '../../feppla/feppla.js'
+import { loadImage, clamp } from '../utils.js'
+import { resources } from './Editor.js'
 
 const TILE_SIZE = 16
 let currentMapIndex = 0
@@ -101,7 +101,7 @@ export const Game = () => `
         canvas.style.width = `${canvas.width * 3}px`
         canvas.style.height = `${canvas.height * 3}px`
         
-        ctx.fillStyle = "#f0f"
+        ctx.fillStyle = '#f0f'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
         for (let index = 0 ; index < map.tilemap.length ; ++index) {

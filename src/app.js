@@ -2,6 +2,7 @@ import { ref, repeat, conditional, text } from '../feppla/feppla.js'
 
 import { Game } from './view/Game.js'
 import { Editor } from './view/Editor.js'
+import { Reference } from './view/Reference.js'
 import { Design } from './view/Design.js'
 
 const routes = [
@@ -14,6 +15,11 @@ const routes = [
     path: '/editor',
     name: 'Editor',
     view: Editor
+  },
+  {
+    path: '/reference',
+    name: 'Reference',
+    view: Reference
   },
   {
     path: '/design',

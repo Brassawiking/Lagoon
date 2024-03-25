@@ -1,0 +1,9 @@
+.reference {
+  padding: 20px 150px;
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
