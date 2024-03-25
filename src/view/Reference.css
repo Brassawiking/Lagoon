@@ -18,5 +18,9 @@
       display: block;
       content: attr(map-width) ' x ' attr(map-height);
     }
+
+    img {
+      image-rendering: pixelated;
+    }
   }
 }
