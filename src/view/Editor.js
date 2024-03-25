@@ -246,17 +246,17 @@ export const Editor = () => `
           <tr>
             <th>[Debug] Used refs</th>
             <th>:</th>
-            <td>${text(() => debugRefCounter())}%</td>
+            <td>${text(() => debugRefCounter())}</td>
           </tr>
           <tr>
             <th>[Debug] Used templates</th>
             <th>:</th>
-            <td>${text(() => debugTemplateCounter())}%</td>
+            <td>${text(() => debugTemplateCounter())}</td>
           </tr>
           <tr>
             <th>[Debug] Live watchers</th>
             <th>:</th>
-            <td>${text(() => debugLiveWatchers())}%</td>
+            <td>${text(() => debugLiveWatchers())}</td>
           </tr>
         </table>
       </fieldset>
