@@ -1,6 +1,6 @@
 import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
 import { clamp, mouseDrag, loadImage } from '../utils.js'
-import rawData from '../../data/data.json' assert { type: 'json' }
+import rawData from '../../data/data.json' with { type: 'json' }
 
 const MOUSE_LEFT_BUTTON = 0
 const MOUSE_MIDDLE_BUTTON = 1
