@@ -325,12 +325,12 @@ export const Editor = () => `
               .class('selected', () => tile === data.tiles[currentPaintingTile])
               .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
             }>
-              <div>
-                ${text(() => `${tile.image.split('.').at(0).split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
-              </div>
               <img draggable="false" ${ref()
                 .property('src', () => tile.image)
               }/>
+              <div>
+                ${text(() => `${tile.image.split('.').at(0).split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
+              </div>
             </div>
           `, undefined, compareArrays)}
         </div>

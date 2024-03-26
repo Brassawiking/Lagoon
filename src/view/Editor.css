@@ -138,7 +138,7 @@
           overflow-wrap: anywhere;
           font-size: 10px;
           font-family: monospace;
-          justify-content: flex-end;
+          justify-content: flex-start;
           border-radius: 1px;
       
           &:hover {
