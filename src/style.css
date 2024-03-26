@@ -132,6 +132,12 @@ progress {
     text-transform: uppercase;
     color: #666;
     cursor: pointer;
+    text-decoration: none;
+    outline: none;
+
+    &:focus {
+      text-decoration: underline;
+    }
 
     &:hover {
       color: #fff;

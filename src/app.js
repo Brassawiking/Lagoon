@@ -53,12 +53,12 @@ ref(document)
 document.querySelector('#app').innerHTML = `
   <div class="main-menu dialog">
     ${repeat(() => routes, (route) => `
-      <div class="item" ${ref()
+      <a class="item" ${ref()
         .class('selected', () => route === currentRoute)
-        .on('click', () => location.hash = `#${route.path}`)
+        .property('href', () => `#${route.path}`)
       }>
         ${text(() => route.name)}
-      </div>
+      </a>
     `)}
   </div>
 
