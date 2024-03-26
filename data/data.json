@@ -1,7 +1,7 @@
 {
   "tiles": [
     {
-      "image": "graphics/tiles/missing.png"
+      "image": "graphics/tiles/_missing_.png"
     },
     {
       "image": "graphics/tiles/atland_stone.png"
