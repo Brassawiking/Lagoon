@@ -81,6 +81,9 @@ const references = [
 export const Reference = () => `
   <div class="reference">
 
+    <img src="references/world-map-1.png">
+    <img src="references/world-map-2.png">
+
     ${repeat(() => references, (mapName, index) => `
       <div class="map-reference" map-width="?" map-height="?">
         <div>#${index} ${mapName}</div>
