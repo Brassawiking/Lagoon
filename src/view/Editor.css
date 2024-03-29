@@ -58,6 +58,7 @@
     right: 408px;
     width: auto;
     text-align: center;
+    pointer-events: none;
   }
 
   .controls {

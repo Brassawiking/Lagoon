@@ -10,6 +10,7 @@ const MOUSE_LEFT_BUTTON_BIT = 1
 
 const TOOL_MOVE = 'Move'
 const TOOL_PAINT = 'Paint'
+const TOOL_PAINT_OVERLAY = 'Paint overlay'
 const TOOL_ENTRANCE = 'Entrance'
 const TOOL_EXIT = 'Exit'
 
@@ -21,33 +22,13 @@ let currentMap
 let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 
-let showCollide = true
+let showCollide = false
 let showBaseLayer = true
 let showOverlayLayer = true
 
 window.x = data
 
 data.maps = data.maps.map((map) => {
-  if (!map.entrances.length) {
-    console.log(`Map "${map.name}" missing entrance, adding automatically`)
-    map.entrances.push({
-      x: 128,
-      y: 112
-    })
-  }
-
-  map.exits.forEach(exit => {
-    exit.target = {
-      mapIndex: 0,
-      entranceIndex: 0
-    }
-  })
-
-  map.entrances.forEach(entrance => {
-    entrance.x = Math.floor(entrance.x / 8) * 8
-    entrance.y = Math.floor(entrance.y / 8) * 8
-  })
-
   return {
     name: map.name,
     width: map.width,
@@ -56,7 +37,10 @@ data.maps = data.maps.map((map) => {
     y: map.y,
     entrances: map.entrances,
     exits: map.exits,
-    tilemap: map.tilemap
+    tilemap: {
+      base: map.tilemap.base,
+      overlay: map.tilemap.overlay
+    }
   }
 })
 
@@ -136,7 +120,10 @@ const copyMap = () => {
       height: currentMap.height,
       x: currentMap.x + currentMap.width + 2,
       y: currentMap.y,
-      tilemap: [...currentMap.tilemap]
+      tilemap: {
+        base: [...currentMap.tilemap.base],
+        overlay: [...currentMap.tilemap.overlay],
+      }
     }
   ]
 }
@@ -153,10 +140,13 @@ const updateMapSize = (width, height) => {
     return
   }
 
-  const newTilemap = Array(width * height).fill(currentPaintingTile)
+  const newBaseLayer = Array(width * height).fill(currentPaintingTile)
   currentMap.width = width
   currentMap.height = height
-  currentMap.tilemap = newTilemap
+  currentMap.tilemap = {
+    base: newBaseLayer,
+    overlay: new Array(newBaseLayer.length).fill(0)
+  }
 }
 
 const handleEditMap = (event, map) => {
@@ -164,14 +154,19 @@ const handleEditMap = (event, map) => {
     return
   }
   
-  if (currentTool === TOOL_PAINT) {
+  if (currentTool === TOOL_PAINT || currentTool === TOOL_PAINT_OVERLAY) {
     const index = 
       clamp(Math.floor(event.offsetX / TILE_SIZE), 0, map.width - 1) 
       + clamp(Math.floor(event.offsetY / TILE_SIZE), 0, map.height - 1) * map.width
 
     if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
       event.stopPropagation()
-      map.tilemap[index] = currentPaintingTile
+      if (currentTool === TOOL_PAINT && showBaseLayer) {
+        map.tilemap.base[index] = currentPaintingTile  
+      }
+      if (currentTool === TOOL_PAINT_OVERLAY && showOverlayLayer) {
+        map.tilemap.overlay[index] = currentPaintingTile  
+      }
     }
   }
 
@@ -206,16 +201,24 @@ const renderMap = (canvas, map) => {
     canvas.height = canvas.clientHeight
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
-    for (let index = 0 ; index < map.tilemap.length ; ++index) {
-      const tileIndex = map.tilemap[index]
+    for (let index = 0 ; index < map.tilemap.base.length ; ++index) {
+      const tileIndex = map.tilemap.base[index]
       const tile = data.tiles[tileIndex]
-      const image = tileImages[map.tilemap[index]] || tileImages[0]
       const x = (index % map.width) * TILE_SIZE
       const y = Math.floor(index / map.width) * TILE_SIZE
 
       if (showBaseLayer) {
         ctx.drawImage(
-          image, 
+          tileImages[tileIndex] || tileImages[0], 
+          x, 
+          y
+        )
+      }
+
+      const overlayTileIndex = map.tilemap.overlay[index]
+      if (showOverlayLayer && overlayTileIndex > 0) {
+        ctx.drawImage(
+          tileImages[overlayTileIndex] || tileImages[0], 
           x, 
           y
         )
@@ -293,7 +296,8 @@ export const Editor = () => `
                   handleEditMap(events[i], map)
                 }
               })
-              .set((canvas) => renderMap(canvas, map), () => map.tilemap.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => map.tilemap.base.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => map.tilemap.overlay.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.entrances.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.exits.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => showCollide) 
@@ -326,6 +330,10 @@ export const Editor = () => `
 
         <button ${ref().on('click', () => currentTool = TOOL_PAINT)}>
           ${TOOL_PAINT}
+        </button>
+
+        <button ${ref().on('click', () => currentTool = TOOL_PAINT_OVERLAY)}>
+          ${TOOL_PAINT_OVERLAY}
         </button>
 
         <button ${ref().on('click', () => currentTool = TOOL_ENTRANCE)}>
@@ -446,7 +454,7 @@ export const Editor = () => `
               .property('max', () => data.tiles.length - 1)
               .on('keypress', (event) =>  { 
                 if (event.key === 'Enter') {
-                  currentMap.tilemap = currentMap.tilemap.map(x => x == event.target.value ? currentPaintingTile : x)
+                  currentMap.tilemap.base = currentMap.tilemap.base.map(x => x == event.target.value ? currentPaintingTile : x)
                 } 
               })
             }>

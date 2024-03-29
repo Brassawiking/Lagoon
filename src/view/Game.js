@@ -84,14 +84,14 @@ export const Game = () => `
         const cameraX = clamp(Math.floor(playerX) - 256 / 2, 0, map.width * TILE_SIZE - 256)
         const cameraY = clamp(Math.floor(playerY) - 224 / 2, 0, map.height * TILE_SIZE - 224)
 
-        for (let index = 0 ; index < map.tilemap.length ; ++index) {
-          const image = tileImages[map.tilemap[index]] || tileImages[0]
+        for (let index = 0 ; index < map.tilemap.base.length ; ++index) {
+          const tileIndex = map.tilemap.base[index]
           const x = (index % map.width) * TILE_SIZE - cameraX
           const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
 
           if (x >= -TILE_SIZE && x <= 256 && y >= -TILE_SIZE && y <= 224) {
             ctx.drawImage(
-              image, 
+              tileImages[tileIndex] || tileImages[0], 
               x, 
               y
             )
@@ -145,6 +145,20 @@ export const Game = () => `
           Math.floor(playerX-12) - cameraX,
           Math.floor(playerY-24-2) - cameraY
         )
+
+        for (let index = 0 ; index < map.tilemap.overlay.length ; ++index) {
+          const tileIndex = map.tilemap.overlay[index]
+          const x = (index % map.width) * TILE_SIZE - cameraX
+          const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
+
+          if (tileIndex > 0 && x >= -TILE_SIZE && x <= 256 && y >= -TILE_SIZE && y <= 224) {
+            ctx.drawImage(
+              tileImages[tileIndex] || tileImages[0], 
+              x, 
+              y
+            )
+          }
+        }
 
         for (let i = 0; i < map.exits.length ; ++i) {
           const exit = map.exits[0]

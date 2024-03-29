@@ -20,7 +20,7 @@ https://brassawiking.github.io/Lagoon/
 - [x] Canvas based rendering for maps
 - [x] Support for entrances and exits betweens maps
   - [ ] Proper editing
-- [ ] Multiple tile layers in maps
+- [x] Multiple tile layers in maps
 
 ### Feppla (Framework)
 - [x] Full page static render
