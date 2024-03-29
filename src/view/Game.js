@@ -3,6 +3,11 @@ import { loadImage, clamp } from '../utils.js'
 import { resources } from './Editor.js'
 
 const TILE_SIZE = 16
+
+const RESOLUTION_WIDTH = 256
+const RESOLUTION_HEIGHT = 224
+const RESOLUTION_SCALE = 4
+
 let currentMapIndex
 
 let playerX
@@ -78,23 +83,23 @@ export const Game = () => `
         walkCounter = moving ? walkCounter + 1 : 0
 
         const ctx = canvas.getContext('2d')
-        canvas.width = 256
-        canvas.height = 224
-        canvas.style.width = `${canvas.width * 4}px`
-        canvas.style.height = `${canvas.height * 4}px`
+        canvas.width = RESOLUTION_WIDTH
+        canvas.height = RESOLUTION_HEIGHT
+        canvas.style.width = `${canvas.width * RESOLUTION_SCALE}px`
+        canvas.style.height = `${canvas.height * RESOLUTION_SCALE}px`
         
         ctx.fillStyle = '#f0f'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        const cameraX = clamp(Math.floor(playerX) - 256 / 2, 0, map.width * TILE_SIZE - 256)
-        const cameraY = clamp(Math.floor(playerY) - 224 / 2, 0, map.height * TILE_SIZE - 224)
+        const cameraX = clamp(Math.floor(playerX) - canvas.width / 2, 0, map.width * TILE_SIZE - canvas.width)
+        const cameraY = clamp(Math.floor(playerY) - canvas.height / 2, 0, map.height * TILE_SIZE - canvas.height)
 
         for (let index = 0 ; index < map.tilemap.base.length ; ++index) {
           const tileIndex = map.tilemap.base[index]
           const x = (index % map.width) * TILE_SIZE - cameraX
           const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
 
-          if (x >= -TILE_SIZE && x <= 256 && y >= -TILE_SIZE && y <= 224) {
+          if (x >= -TILE_SIZE && x <= canvas.width && y >= -TILE_SIZE && y <= canvas.height) {
             ctx.drawImage(
               tileImages[tileIndex] || tileImages[0], 
               x, 
@@ -176,7 +181,7 @@ export const Game = () => `
           const x = (index % map.width) * TILE_SIZE - cameraX
           const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
 
-          if (tileIndex > 0 && x >= -TILE_SIZE && x <= 256 && y >= -TILE_SIZE && y <= 224) {
+          if (tileIndex > 0 && x >= -TILE_SIZE && x <= canvas.width && y >= -TILE_SIZE && y <= canvas.height) {
             ctx.drawImage(
               tileImages[tileIndex] || tileImages[0], 
               x, 
