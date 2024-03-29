@@ -52,22 +52,24 @@ export const Game = () => `
         const map = resources.data.maps[currentMapIndex]
         let moving = false
 
-        if (keyDown('ArrowLeft')) {
+        const gp = navigator.getGamepads()[0]
+
+        if (keyDown('ArrowLeft') || gp?.buttons[14].pressed) {
           playerX = clamp(playerX - playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'left'
           moving = true
         }
-        if (keyDown('ArrowRight')) {
+        if (keyDown('ArrowRight') || gp?.buttons[15].pressed) {
           playerX = clamp(playerX + playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'right'
           moving = true
         }
-        if (keyDown('ArrowUp')) {
+        if (keyDown('ArrowUp') || gp?.buttons[12].pressed) {
           playerY = clamp(playerY - playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'up'
           moving = true
         }
-        if (keyDown('ArrowDown')) {
+        if (keyDown('ArrowDown') || gp?.buttons[13].pressed) {
           playerY = clamp(playerY + playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'down'
           moving = true
