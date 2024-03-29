@@ -153,6 +153,7 @@
   
           img {
             image-rendering: pixelated;
+            background: #f0f;
           }
         }
       }

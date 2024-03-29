@@ -10,17 +10,13 @@ let playerY
 let playerHitboxWidth = 21
 let playerHitboxHeight = 17
 let playerDirection = 'down'
-const playerSpeed = 1.5
+let walkCounter = 0
+const playerSpeed = 1.5 // TODO: Use 30 FPS update logic instead?
 
 let prevKeys = {}
 const keys = {}
 
-const nasirSpriteImages = {
-  left: await loadImage('graphics/sprites/nasirLeft.png'),
-  right: await loadImage('graphics/sprites/nasirRight.png'),
-  up: await loadImage('graphics/sprites/nasirUp.png'),
-  down: await loadImage('graphics/sprites/nasirDown.png')
-} 
+const nasirSpriteSheet = await loadImage('graphics/sprites/nasir_spritesheet.png')
 
 const keyDown = (key) => keys[key]
 const keyPressed = (key) => keys[key] && !prevKeys[key]
@@ -54,29 +50,36 @@ export const Game = () => `
       .live((canvas) => {
         const tileImages = resources.tileImages
         const map = resources.data.maps[currentMapIndex]
+        let moving = false
 
         if (keyDown('ArrowLeft')) {
           playerX = clamp(playerX - playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'left'
+          moving = true
         }
         if (keyDown('ArrowRight')) {
           playerX = clamp(playerX + playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'right'
+          moving = true
         }
         if (keyDown('ArrowUp')) {
           playerY = clamp(playerY - playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'up'
+          moving = true
         }
         if (keyDown('ArrowDown')) {
           playerY = clamp(playerY + playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'down'
+          moving = true
         }
+
+        walkCounter = moving ? walkCounter + 1 : 0
 
         const ctx = canvas.getContext('2d')
         canvas.width = 256
         canvas.height = 224
-        canvas.style.width = `${canvas.width * 3}px`
-        canvas.style.height = `${canvas.height * 3}px`
+        canvas.style.width = `${canvas.width * 4}px`
+        canvas.style.height = `${canvas.height * 4}px`
         
         ctx.fillStyle = '#f0f'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -140,10 +143,30 @@ export const Game = () => `
           playerHitboxHeight
         )
 
+        const directionToSpriteRow = {
+          'up': 48 * 0,
+          'down': 48 * 1,
+          'left': 48 * 2,
+          'right': 48 * 3,
+        }
+
+        const walkCycle = [
+          32 * 0,
+          32 * 1,
+          32 * 0,
+          32 * 2,
+        ]
+
         ctx.drawImage(
-          nasirSpriteImages[playerDirection],
-          Math.floor(playerX-12) - cameraX,
-          Math.floor(playerY-24-2) - cameraY
+          nasirSpriteSheet,
+          walkCycle[(Math.floor(walkCounter / 6) % 4)],
+          directionToSpriteRow[playerDirection],
+          32,
+          48,
+          Math.floor(playerX - 16) - cameraX,
+          Math.floor(playerY - 42) - cameraY,
+          32,
+          48,
         )
 
         for (let index = 0 ; index < map.tilemap.overlay.length ; ++index) {
