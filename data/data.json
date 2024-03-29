@@ -10,10 +10,12 @@
       "image": "graphics/tiles/atland_dirt.png"
     },
     {
-      "image": "graphics/tiles/atland_wall_top.png"
+      "image": "graphics/tiles/atland_wall_top.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/atland_water.png"
+      "image": "graphics/tiles/atland_water.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/empty.png"
@@ -25,28 +27,34 @@
       "image": "graphics/tiles/elf_field_grass.png"
     },
     {
-      "image": "graphics/tiles/elf_field_rock.png"
+      "image": "graphics/tiles/elf_field_rock.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/elf_field_dirt.png"
     },
     {
-      "image": "graphics/tiles/atland_wall_side.png"
+      "image": "graphics/tiles/atland_wall_side.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/gold_cave_dirt.png"
     },
     {
-      "image": "graphics/tiles/gold_cave_wall_side_3.png"
+      "image": "graphics/tiles/gold_cave_wall_side_3.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_wall_top.png"
+      "image": "graphics/tiles/gold_cave_wall_top.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_wall_side_1.png"
+      "image": "graphics/tiles/gold_cave_wall_side_1.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_wall_side_2.png"
+      "image": "graphics/tiles/gold_cave_wall_side_2.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/gold_cave_dirt_shadow.png"
@@ -58,7 +66,8 @@
       "image": "graphics/tiles/gold_cave_sampson_floor.png"
     },
     {
-      "image": "graphics/tiles/gold_cave_sampson_floor_side.png"
+      "image": "graphics/tiles/gold_cave_sampson_floor_side.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/gold_cave_sampson_small_decor_top.png"
@@ -82,10 +91,12 @@
       "image": "graphics/tiles/philips_castle_1f_floor.png"
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_wall_side.png"
+      "image": "graphics/tiles/philips_castle_1f_wall_side.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_wall_top.png"
+      "image": "graphics/tiles/philips_castle_1f_wall_top.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/philips_castle_1f_floor_shadow.png"
@@ -94,22 +105,27 @@
       "image": "graphics/tiles/philips_castle_1f_floor_wall.png"
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_emblem_1.png"
+      "image": "graphics/tiles/philips_castle_1f_emblem_1.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_emblem_2.png"
+      "image": "graphics/tiles/philips_castle_1f_emblem_2.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_emblem_3.png"
+      "image": "graphics/tiles/philips_castle_1f_emblem_3.png",
+      "collide": true
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_emblem_4.png"
+      "image": "graphics/tiles/philips_castle_1f_emblem_4.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/dwarf_desert_dirt.png"
     },
     {
-      "image": "graphics/tiles/dwarf_desert_rock.png"
+      "image": "graphics/tiles/dwarf_desert_rock.png",
+      "collide": true
     },
     {
       "image": "graphics/tiles/dwarf_desert_grass.png"
@@ -124,11 +140,22 @@
       "y": 0,
       "entrances": [
         {
-          "x": 641,
-          "y": 117
+          "x": 640,
+          "y": 112
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 38,
+          "y": 0,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         3,
         3,
@@ -7821,10 +7848,21 @@
       "entrances": [
         {
           "x": 160,
-          "y": 449
+          "y": 448
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 8,
+          "y": 30,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         8,
         8,
@@ -8694,11 +8732,22 @@
       "y": 13,
       "entrances": [
         {
-          "x": 156,
-          "y": 613
+          "x": 160,
+          "y": 624
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 8,
+          "y": 40,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         5,
         5,
@@ -9678,11 +9727,22 @@
       "y": -135,
       "entrances": [
         {
-          "x": 1407,
-          "y": 1513
+          "x": 1408,
+          "y": 1512
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 86,
+          "y": 96,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         13,
         13,
@@ -19298,11 +19358,22 @@
       "y": -153,
       "entrances": [
         {
-          "x": 126,
-          "y": 237
+          "x": 128,
+          "y": 224
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 6,
+          "y": 15,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         13,
         13,
@@ -19570,11 +19641,18 @@
       "y": -219,
       "entrances": [
         {
-          "x": 335,
-          "y": 985
+          "x": 336,
+          "y": 984
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 19,
+          "y": 63,
+          "width": 4,
+          "height": 4
+        }
+      ],
       "tilemap": [
         0,
         0,
@@ -25730,11 +25808,22 @@
       "y": -283,
       "entrances": [
         {
-          "x": 494,
-          "y": 946
+          "x": 496,
+          "y": 944
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 29,
+          "y": 60,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         0,
         0,
@@ -29714,11 +29803,22 @@
       "y": -179,
       "entrances": [
         {
-          "x": 465,
-          "y": 772
+          "x": 464,
+          "y": 784
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 27,
+          "y": 44,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         5,
         5,
@@ -37123,10 +37223,21 @@
       "entrances": [
         {
           "x": 96,
-          "y": 162
+          "y": 160
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 4,
+          "y": 11,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         13,
         13,
@@ -37607,10 +37718,21 @@
       "entrances": [
         {
           "x": 48,
-          "y": 155
+          "y": 152
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 1,
+          "y": 11,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         13,
         13,
@@ -37857,10 +37979,21 @@
       "entrances": [
         {
           "x": 352,
-          "y": 588
+          "y": 584
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 20,
+          "y": 32,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         8,
         8,
@@ -40128,11 +40261,22 @@
       "y": -285,
       "entrances": [
         {
-          "x": 333,
-          "y": 942
+          "x": 336,
+          "y": 952
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 19,
+          "y": 61,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         4,
         4,
@@ -44241,10 +44385,21 @@
       "entrances": [
         {
           "x": 992,
-          "y": 1921
+          "y": 1920
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 60,
+          "y": 121,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         5,
         5,
@@ -59508,11 +59663,22 @@
       "y": -285,
       "entrances": [
         {
-          "x": 127,
-          "y": 233
+          "x": 128,
+          "y": 208
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 6,
+          "y": 14,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         5,
         28,
@@ -59781,10 +59947,17 @@
       "entrances": [
         {
           "x": 128,
-          "y": 143
+          "y": 144
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 9,
+          "y": 1,
+          "width": 4,
+          "height": 4
+        }
+      ],
       "tilemap": [
         5,
         28,
@@ -60052,11 +60225,22 @@
       "y": -413,
       "entrances": [
         {
-          "x": 1361,
-          "y": 1825
+          "x": 1360,
+          "y": 1824
         }
       ],
-      "exits": [],
+      "exits": [
+        {
+          "x": 83,
+          "y": 109,
+          "width": 4,
+          "height": 4,
+          "target": {
+            "mapIndex": 0,
+            "entranceIndex": 0
+          }
+        }
+      ],
       "tilemap": [
         35,
         35,

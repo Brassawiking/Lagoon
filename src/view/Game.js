@@ -25,18 +25,18 @@ const nasirSpriteImages = {
 const keyDown = (key) => keys[key]
 const keyPressed = (key) => keys[key] && !prevKeys[key]
 
-const setMap = (mapIndex) => {
+const setMap = (mapIndex, entranceIndex) => {
   if (mapIndex === currentMapIndex || mapIndex < 0 || mapIndex > resources.data.maps.length - 1) {
     return
   }
 
   const map = resources.data.maps[mapIndex]
-  playerX = map.entrances[0]?.x || 112
-  playerY = map.entrances[0]?.y || 96
+  playerX = map.entrances[entranceIndex].x
+  playerY = map.entrances[entranceIndex].y
   currentMapIndex = mapIndex
 }
 
-setMap(0)
+setMap(0, 0)
 
 export const Game = () => `
   <div class="game" tabindex="0" ${ref()
@@ -52,13 +52,6 @@ export const Game = () => `
   }>
     <canvas class="dialog" ${ref()
       .live((canvas) => {
-        if (keyPressed('a')) {
-          setMap(currentMapIndex - 1)
-        }
-        if (keyPressed('d')) {
-          setMap(currentMapIndex + 1)
-        }
-
         const tileImages = resources.tileImages
         const map = resources.data.maps[currentMapIndex]
 
@@ -77,10 +70,6 @@ export const Game = () => `
         if (keyDown('ArrowDown')) {
           playerY = clamp(playerY + playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'down'
-        }
-
-        prevKeys = {
-          ...keys
         }
 
         const ctx = canvas.getContext('2d')
@@ -156,6 +145,29 @@ export const Game = () => `
           Math.floor(playerX-12) - cameraX,
           Math.floor(playerY-24-2) - cameraY
         )
+
+        for (let i = 0; i < map.exits.length ; ++i) {
+          const exit = map.exits[0]
+          if (
+            playerX >= exit.x * TILE_SIZE && 
+            playerX < (exit.x + exit.width) * TILE_SIZE &&
+            playerY >= exit.y * TILE_SIZE && 
+            playerY < (exit.y + exit.height) * TILE_SIZE
+          ) {
+            setMap(exit.target.mapIndex, exit.target.entranceIndex)
+          }
+        }
+
+        if (keyPressed('a')) {
+          setMap(currentMapIndex - 1, 0)
+        }
+        if (keyPressed('d')) {
+          setMap(currentMapIndex + 1, 0)
+        }
+
+        prevKeys = {
+          ...keys
+        }
       })
     }></canvas>
   </div>

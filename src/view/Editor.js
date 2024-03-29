@@ -20,9 +20,30 @@ let viewZoom = 100
 let currentMap
 let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
+let showCollide = true
 window.x = data
 
 data.maps = data.maps.map((map) => {
+  if (!map.entrances.length) {
+    console.log(`Map "${map.name}" missing entrance, adding automatically`)
+    map.entrances.push({
+      x: 128,
+      y: 112
+    })
+  }
+
+  map.exits.forEach(exit => {
+    exit.target = {
+      mapIndex: 0,
+      entranceIndex: 0
+    }
+  })
+
+  map.entrances.forEach(entrance => {
+    entrance.x = Math.floor(entrance.x / 8) * 8
+    entrance.y = Math.floor(entrance.y / 8) * 8
+  })
+
   return {
     name: map.name,
     width: map.width,
@@ -141,8 +162,8 @@ const handleEditMap = (event, map) => {
   
   if (currentTool === TOOL_PAINT) {
     const index = 
-      clamp(Math.floor(event.offsetX / TILE_SIZE), 0, map.width-1) 
-      + clamp(Math.floor(event.offsetY / TILE_SIZE), 0, map.height-1) * map.width
+      clamp(Math.floor(event.offsetX / TILE_SIZE), 0, map.width - 1) 
+      + clamp(Math.floor(event.offsetY / TILE_SIZE), 0, map.height - 1) * map.width
 
     if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
       event.stopPropagation()
@@ -154,8 +175,20 @@ const handleEditMap = (event, map) => {
     if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
       event.stopPropagation()
       map.entrances = [{
-        x: clamp(Math.round(event.offsetX), 0, (map.width * TILE_SIZE)-1),
-        y: clamp(Math.round(event.offsetY), 0, (map.height * TILE_SIZE)-1)
+        x: clamp(Math.floor(event.offsetX / 8) * 8, 0, (map.width * TILE_SIZE) - 1),
+        y: clamp(Math.floor(event.offsetY / 8) * 8, 0, (map.height * TILE_SIZE) - 1)
+      }]
+    }
+  }
+
+  if (currentTool === TOOL_EXIT) {
+    if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
+      event.stopPropagation()
+      map.exits = [{
+        x: clamp(Math.round(event.offsetX / TILE_SIZE), 0, map.width - 1),
+        y: clamp(Math.round(event.offsetY / TILE_SIZE), 0, map.height - 1),
+        width: 4,
+        height: 4
       }]
     }
   }
@@ -170,23 +203,45 @@ const renderMap = (canvas, map) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
     for (let index = 0 ; index < map.tilemap.length ; ++index) {
+      const tileIndex = map.tilemap[index]
+      const tile = data.tiles[tileIndex]
       const image = tileImages[map.tilemap[index]] || tileImages[0]
+      const x = (index % map.width) * TILE_SIZE
+      const y = Math.floor(index / map.width) * TILE_SIZE
       ctx.drawImage(
         image, 
-        (index % map.width) * TILE_SIZE, 
-        Math.floor(index / map.width) * TILE_SIZE
+        x, 
+        y
       )
+
+      if (showCollide && tile.collide) {
+        ctx.fillStyle = '#ff000080'
+        ctx.fillRect(
+          x,
+          y,
+          TILE_SIZE,
+          TILE_SIZE,
+        )
+      }
     }
 
     for (let i = 0 ; i < map.entrances.length ; ++i) {
       const entrance = map.entrances[i]
       ctx.beginPath()
-      ctx.arc(entrance.x, entrance.y, 10, 0, 2 * Math.PI, false)
-      ctx.fillStyle = 'green'
+      ctx.arc(entrance.x, entrance.y, 8, 0, 2 * Math.PI, false)
+      ctx.fillStyle = '#00ff0080'
       ctx.fill()
-      ctx.lineWidth = 2
-      ctx.strokeStyle = '#003300'
-      ctx.stroke()
+    }
+
+    for (let i = 0 ; i < map.exits.length ; ++i) {
+      const exit = map.exits[i]
+      ctx.fillStyle = '#ff00ff80'
+      ctx.fillRect(
+        exit.x * TILE_SIZE,
+        exit.y * TILE_SIZE,
+        exit.width * TILE_SIZE,
+        exit.height * TILE_SIZE,
+      )
     }
   })
 }
@@ -233,6 +288,8 @@ export const Editor = () => `
               })
               .set((canvas) => renderMap(canvas, map), () => map.tilemap.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.entrances.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => map.exits.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => showCollide) 
             }></canvas>
           </div>
         `)}
@@ -277,6 +334,20 @@ export const Editor = () => `
         <button ${ref().on('click', () => { console.log(JSON.stringify(data, null, 2)) })}>
           Copy JSON data
         </button>
+      </fieldset>
+
+      <fieldset>
+        <legend>View</legend>
+
+        <label>
+          <div>
+            <input type="checkbox" style="width: auto" ${ref()
+              .property('checked', () => showCollide)
+              .on('change', () => showCollide = !showCollide)
+            }>
+            Show tile collide
+          </div>
+        </label>
       </fieldset>
 
       <fieldset>
