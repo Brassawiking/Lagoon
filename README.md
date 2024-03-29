@@ -7,6 +7,10 @@ https://brassawiking.github.io/Lagoon/
 
 ## Milestones
 
+### Game
+- [x] Rough basic camera and movement
+- [x] Travel between maps
+
 ### Content
 - [ ] Roughly block out all original maps 
   - 16 / 74 done
@@ -14,6 +18,8 @@ https://brassawiking.github.io/Lagoon/
 ### Editor
 - [x] Basic editing to create and block out maps
 - [x] Canvas based rendering for maps
+- [x] Support for entrances and exits betweens maps
+  - [ ] Proper editing
 - [ ] Multiple tile layers in maps
 
 ### Feppla (Framework)

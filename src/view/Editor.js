@@ -20,7 +20,11 @@ let viewZoom = 100
 let currentMap
 let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
+
 let showCollide = true
+let showBaseLayer = true
+let showOverlayLayer = true
+
 window.x = data
 
 data.maps = data.maps.map((map) => {
@@ -208,11 +212,14 @@ const renderMap = (canvas, map) => {
       const image = tileImages[map.tilemap[index]] || tileImages[0]
       const x = (index % map.width) * TILE_SIZE
       const y = Math.floor(index / map.width) * TILE_SIZE
-      ctx.drawImage(
-        image, 
-        x, 
-        y
-      )
+
+      if (showBaseLayer) {
+        ctx.drawImage(
+          image, 
+          x, 
+          y
+        )
+      }
 
       if (showCollide && tile.collide) {
         ctx.fillStyle = '#ff000080'
@@ -290,6 +297,8 @@ export const Editor = () => `
               .set((canvas) => renderMap(canvas, map), () => map.entrances.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.exits.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => showCollide) 
+              .set((canvas) => renderMap(canvas, map), () => showBaseLayer) 
+              .set((canvas) => renderMap(canvas, map), () => showOverlayLayer) 
             }></canvas>
           </div>
         `)}
@@ -339,15 +348,31 @@ export const Editor = () => `
       <fieldset>
         <legend>View</legend>
 
-        <label>
-          <div>
+        <div>
+          <label>
+            Show tile collide:
             <input type="checkbox" style="width: auto" ${ref()
               .property('checked', () => showCollide)
               .on('change', () => showCollide = !showCollide)
             }>
-            Show tile collide
-          </div>
-        </label>
+          </label>
+
+          <label>
+            Show base layer:
+            <input type="checkbox" style="width: auto" ${ref()
+              .property('checked', () => showBaseLayer)
+              .on('change', () => showBaseLayer = !showBaseLayer)
+            }>
+          </label>
+
+          <label>
+            Show overlay layer:
+            <input type="checkbox" style="width: auto" ${ref()
+              .property('checked', () => showOverlayLayer)
+              .on('change', () => showOverlayLayer = !showOverlayLayer)
+            }>
+          </label>
+        </div>
       </fieldset>
 
       <fieldset>

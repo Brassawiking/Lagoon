@@ -17,7 +17,7 @@
       .map {
         outline: 1px solid #f1c40f;
         position: absolute;
-        background: #e74c3c;
+        background: #f0f;
       
         &:hover {
           outline: 2px solid #f1c40f;
