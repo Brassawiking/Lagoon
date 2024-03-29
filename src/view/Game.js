@@ -3,12 +3,12 @@ import { loadImage, clamp } from '../utils.js'
 import { resources } from './Editor.js'
 
 const TILE_SIZE = 16
-let currentMapIndex = 0
-let cameraX = 0
-let cameraY = 0
+let currentMapIndex
 
-let playerX = 112
-let playerY = 96
+let playerX
+let playerY
+let playerHitboxWidth = 21
+let playerHitboxHeight = 17
 let playerDirection = 'down'
 const playerSpeed = 1.5
 
@@ -25,6 +25,19 @@ const nasirSpriteImages = {
 const keyDown = (key) => keys[key]
 const keyPressed = (key) => keys[key] && !prevKeys[key]
 
+const setMap = (mapIndex) => {
+  if (mapIndex === currentMapIndex || mapIndex < 0 || mapIndex > resources.data.maps.length - 1) {
+    return
+  }
+
+  const map = resources.data.maps[mapIndex]
+  playerX = map.entrances[0]?.x || 112
+  playerY = map.entrances[0]?.y || 96
+  currentMapIndex = mapIndex
+}
+
+setMap(0)
+
 export const Game = () => `
   <div class="game" tabindex="0" ${ref()
     .node((el) => {
@@ -39,56 +52,31 @@ export const Game = () => `
   }>
     <canvas class="dialog" ${ref()
       .live((canvas) => {
+        if (keyPressed('a')) {
+          setMap(currentMapIndex - 1)
+        }
+        if (keyPressed('d')) {
+          setMap(currentMapIndex + 1)
+        }
+
         const tileImages = resources.tileImages
         const map = resources.data.maps[currentMapIndex]
 
         if (keyDown('ArrowLeft')) {
-          playerX = clamp(playerX - playerSpeed, 0, map.width * TILE_SIZE - 24)
+          playerX = clamp(playerX - playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'left'
         }
         if (keyDown('ArrowRight')) {
-          playerX = clamp(playerX + playerSpeed, 0, map.width * TILE_SIZE - 24)
+          playerX = clamp(playerX + playerSpeed, Math.floor(playerHitboxWidth / 2), map.width * TILE_SIZE - Math.ceil(playerHitboxWidth / 2))
           playerDirection = 'right'
         }
         if (keyDown('ArrowUp')) {
-          playerY = clamp(playerY - playerSpeed, 0, map.height * TILE_SIZE - 32)
+          playerY = clamp(playerY - playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'up'
         }
         if (keyDown('ArrowDown')) {
-          playerY = clamp(playerY + playerSpeed, 0, map.height * TILE_SIZE - 32)
+          playerY = clamp(playerY + playerSpeed, Math.floor(playerHitboxHeight / 2), map.height * TILE_SIZE - Math.ceil(playerHitboxHeight / 2))
           playerDirection = 'down'
-        }
-
-        const leftEdge = 56
-        const rightEdge = 256 - leftEdge - 24
-        const topEdge = 56
-        const bottomEdge = 224 - topEdge - 32
-        if (playerX - cameraX < leftEdge) {
-          cameraX = clamp(Math.floor(playerX) - leftEdge, 0, map.width * TILE_SIZE - 256)
-        }
-        if (playerX - cameraX > rightEdge) {
-          cameraX = clamp(Math.floor(playerX) - rightEdge, 0, map.width * TILE_SIZE - 256)
-        }
-        if (playerY - cameraY < topEdge) {
-          cameraY = clamp(Math.floor(playerY) - topEdge, 0, map.height * TILE_SIZE - 224)
-        }
-        if (playerY - cameraY > bottomEdge) {
-          cameraY = clamp(Math.floor(playerY) - bottomEdge, 0, map.height * TILE_SIZE - 224)
-        }
-
-        if (keyPressed('a')) {
-          currentMapIndex = clamp(currentMapIndex - 1, 0, resources.data.maps.length - 1)
-          cameraX = 0
-          cameraY = 0
-          playerX = 112
-          playerY = 96
-        }
-        if (keyPressed('d')) {
-          currentMapIndex = clamp(currentMapIndex + 1, 0, resources.data.maps.length - 1)
-          cameraX = 0
-          cameraY = 0
-          playerX = 112
-          playerY = 96
         }
 
         prevKeys = {
@@ -104,6 +92,9 @@ export const Game = () => `
         ctx.fillStyle = '#f0f'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+        const cameraX = clamp(Math.floor(playerX) - 256 / 2, 0, map.width * TILE_SIZE - 256)
+        const cameraY = clamp(Math.floor(playerY) - 224 / 2, 0, map.height * TILE_SIZE - 224)
+
         for (let index = 0 ; index < map.tilemap.length ; ++index) {
           const image = tileImages[map.tilemap[index]] || tileImages[0]
           const x = (index % map.width) * TILE_SIZE - cameraX
@@ -118,10 +109,52 @@ export const Game = () => `
           }
         }
 
+        ctx.fillStyle = '#ffff0080'
+        if (playerDirection === 'right') {
+          ctx.fillRect(
+            Math.floor(playerX + 0) - cameraX, 
+            Math.floor(playerY - 8) - cameraY, 
+            25, 
+            16
+          )
+        }
+        if (playerDirection === 'down') {
+          ctx.fillRect(
+            Math.floor(playerX - 16) - cameraX, 
+            Math.floor(playerY - 0) - cameraY, 
+            32, 
+            15
+          )
+        }
+        if (playerDirection === 'left') {
+          ctx.fillRect(
+            Math.floor(playerX - 25) - cameraX, 
+            Math.floor(playerY - 8) - cameraY, 
+            25, 
+            16
+          )
+        }
+        if (playerDirection === 'up') {
+          ctx.fillRect(
+            Math.floor(playerX - 16) - cameraX, 
+            Math.floor(playerY - 15) - cameraY, 
+            32, 
+            15
+          )
+        }
+
+        ctx.fillStyle = '#ff000080'
+        ctx.fillRect(
+          Math.floor(playerX - Math.floor(playerHitboxWidth / 2)) - cameraX, 
+          Math.floor(playerY - Math.floor(playerHitboxHeight / 2)) - cameraY, 
+          playerHitboxWidth, 
+          playerHitboxHeight
+        )
+
         ctx.drawImage(
           nasirSpriteImages[playerDirection],
-          Math.floor(playerX) - cameraX,
-          Math.floor(playerY) - cameraY
+          Math.floor(playerX-12) - cameraX,
+          Math.floor(playerY-24-2) - cameraY
         )
       })
     }></canvas>
