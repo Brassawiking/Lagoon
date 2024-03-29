@@ -142,6 +142,8 @@ const handlePaint = (event, map) => {
   }
 }
 
+const drawCalls = []
+
 export const Editor = () => `
   <div class="editor">
     <div class="view" ${ref()
@@ -150,8 +152,14 @@ export const Editor = () => `
       .on('wheel', handleWheelZoom)
     }>
       <div class="canvas" ${ref()
-        .style('scale', () => viewZoom / 100)}
-      >
+        .style('scale', () => viewZoom / 100)
+        .live(() => {
+          if (drawCalls.length) {
+            const drawCall = drawCalls.shift()
+            drawCall()
+          }
+        })
+      }>
         ${repeat(() => data.maps, (map) => `
           <div class="map" ${ref()
             .class('current', () => map === currentMap)
@@ -177,19 +185,21 @@ export const Editor = () => `
                 }
               })
               .set((canvas) => {
-                const ctx = canvas.getContext('2d')
-                canvas.width = canvas.clientWidth
-                canvas.height = canvas.clientHeight
-                ctx.clearRect(0, 0, canvas.width, canvas.height)
-                
-                for (let index = 0 ; index < map.tilemap.length ; ++index) {
-                  const image = tileImages[map.tilemap[index]] || tileImages[0]
-                  ctx.drawImage(
-                    image, 
-                    (index % map.width) * TILE_SIZE, 
-                    Math.floor(index / map.width) * TILE_SIZE
-                  )
-                }
+                drawCalls.push(() => {
+                  const ctx = canvas.getContext('2d')
+                  canvas.width = canvas.clientWidth
+                  canvas.height = canvas.clientHeight
+                  ctx.clearRect(0, 0, canvas.width, canvas.height)
+                  
+                  for (let index = 0 ; index < map.tilemap.length ; ++index) {
+                    const image = tileImages[map.tilemap[index]] || tileImages[0]
+                    ctx.drawImage(
+                      image, 
+                      (index % map.width) * TILE_SIZE, 
+                      Math.floor(index / map.width) * TILE_SIZE
+                    )
+                  }
+                })
               }, () => map.tilemap.slice(), compareArrays) 
             }></canvas>
           </div>
@@ -325,7 +335,7 @@ export const Editor = () => `
               .class('selected', () => tile === data.tiles[currentPaintingTile])
               .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
             }>
-              <img draggable="false" ${ref()
+              <img draggable="false" loading="lazy" ${ref()
                 .property('src', () => tile.image)
               }/>
               <div>
