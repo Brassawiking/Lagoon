@@ -1,9 +1,13 @@
+//@ts-check
 import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
 import { clamp, mouseDrag, loadImage } from '../utils.js'
 import rawData from '../../data/data.json' with { type: 'json' }
+import { Data } from '../logic/data.js'
+import { Map } from '../logic/data.js'
 
 const MOUSE_LEFT_BUTTON = 0
 const MOUSE_MIDDLE_BUTTON = 1
+const MOUSE_RIGHT_BUTTON = 2
 const TILE_SIZE = 16
 
 const MOUSE_LEFT_BUTTON_BIT = 1
@@ -14,7 +18,7 @@ const TOOL_PAINT_OVERLAY = 'Paint overlay'
 const TOOL_ENTRANCE = 'Entrance'
 const TOOL_EXIT = 'Exit'
 
-const data = structuredClone(rawData)
+const data = new Data(structuredClone(rawData))
 let viewOriginX = -50
 let viewOriginY = -50
 let viewZoom = 100
@@ -26,7 +30,7 @@ let showCollide = false
 let showBaseLayer = true
 let showOverlayLayer = true
 
-window.x = data
+Object.defineProperty(window, 'x', data)
 
 data.maps = data.maps.map((map) => {
   return {
@@ -37,9 +41,9 @@ data.maps = data.maps.map((map) => {
     y: map.y,
     entrances: map.entrances,
     exits: map.exits,
-    tilemap: {
-      base: map.tilemap.base,
-      overlay: map.tilemap.overlay
+    tilemaps: {
+      base: map.tilemaps.base,
+      overlay: map.tilemaps.overlay
     }
   }
 })
@@ -60,7 +64,7 @@ const handleWheelZoom = (event) => {
 }
 
 const handleMousedownPan = (event) => {
-  mouseDrag(event, MOUSE_MIDDLE_BUTTON, () => {
+  mouseDrag(event, MOUSE_RIGHT_BUTTON, () => {
     const x = viewOriginX
     const y = viewOriginY
 
@@ -106,7 +110,12 @@ const addMap = () => {
       height,
       x: 0,
       y: 0,
-      tilemap: Array(width * height).fill(currentPaintingTile)
+      entrances: [],
+      exits: [],
+      tilemaps: {
+        base: Array(width * height).fill(currentPaintingTile),
+        overlay: Array(width * height).fill(0)
+      }
     }
   ]
 }
@@ -115,15 +124,9 @@ const copyMap = () => {
   data.maps = [
     ...data.maps,
     currentMap = {
+      ...structuredClone(currentMap),
       name: `${currentMap.name} (copy)`,
-      width: currentMap.width,
-      height: currentMap.height,
       x: currentMap.x + currentMap.width + 2,
-      y: currentMap.y,
-      tilemap: {
-        base: [...currentMap.tilemap.base],
-        overlay: [...currentMap.tilemap.overlay],
-      }
     }
   ]
 }
@@ -194,6 +197,9 @@ const handleEditMap = (event, map) => {
 }
 
 const drawCalls = []
+/**
+ * @param {Map} map
+ */
 const renderMap = (canvas, map) => {
   drawCalls.push(() => {
     const ctx = canvas.getContext('2d')
@@ -201,8 +207,8 @@ const renderMap = (canvas, map) => {
     canvas.height = canvas.clientHeight
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
-    for (let index = 0 ; index < map.tilemap.base.length ; ++index) {
-      const tileIndex = map.tilemap.base[index]
+    for (let index = 0 ; index < map.tilemaps.base.length ; ++index) {
+      const tileIndex = map.tilemaps.base[index]
       const tile = data.tiles[tileIndex]
       const x = (index % map.width) * TILE_SIZE
       const y = Math.floor(index / map.width) * TILE_SIZE
@@ -215,7 +221,7 @@ const renderMap = (canvas, map) => {
         )
       }
 
-      const overlayTileIndex = map.tilemap.overlay[index]
+      const overlayTileIndex = map.tilemaps.overlay[index]
       if (showOverlayLayer && overlayTileIndex > 0) {
         ctx.drawImage(
           tileImages[overlayTileIndex] || tileImages[0], 
@@ -261,6 +267,7 @@ export const Editor = () => `
     <div class="view" ${ref()
       .on('click', () => currentMap = null)
       .on('mousedown', handleMousedownPan)
+      .on('contextmenu', (event) => { event.preventDefault() })
       .on('wheel', handleWheelZoom)
     }>
       <div class="canvas" ${ref()
@@ -272,7 +279,7 @@ export const Editor = () => `
           }
         })
       }>
-        ${repeat(() => data.maps, (map) => `
+        ${repeat(() => data.maps, (/** @type {Map} */ map) => `
           <div class="map" ${ref()
             .class('current', () => map === currentMap)
             .style('width', () => `${map.width * TILE_SIZE}px`)
@@ -296,8 +303,8 @@ export const Editor = () => `
                   handleEditMap(events[i], map)
                 }
               })
-              .set((canvas) => renderMap(canvas, map), () => map.tilemap.base.slice(), compareArrays) 
-              .set((canvas) => renderMap(canvas, map), () => map.tilemap.overlay.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => map.tilemaps.base.slice(), compareArrays) 
+              .set((canvas) => renderMap(canvas, map), () => map.tilemaps.overlay.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.entrances.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => map.exits.slice(), compareArrays) 
               .set((canvas) => renderMap(canvas, map), () => showCollide) 
@@ -474,7 +481,8 @@ export const Editor = () => `
         <legend>Tiles (${data.tiles.length})</legend>
 
         <div class="tile-palette"> 
-          ${repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
+          ${/*@ts-ignore*/
+            repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
             <div class="preview" ${ref()
               .class('selected', () => tile === data.tiles[currentPaintingTile])
               .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))

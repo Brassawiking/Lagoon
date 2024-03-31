@@ -1,3 +1,4 @@
+//@ts-check
 import { repeat, ref, text } from '../../feppla/feppla.js'
 
 const references = [

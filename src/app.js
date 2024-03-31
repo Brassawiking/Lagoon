@@ -1,3 +1,4 @@
+//@ts-check
 import { ref, repeat, conditional, text } from '../feppla/feppla.js'
 
 import { Game } from './view/Game.js'
@@ -50,6 +51,7 @@ ref(document)
   .property('title', () => [currentRoute?.name,'Lagoon'].join(' | '))
   .done()
 
+//@ts-ignore
 document.querySelector('#app').innerHTML = `
   <div class="main-menu dialog">
     ${repeat(() => routes, (route) => `

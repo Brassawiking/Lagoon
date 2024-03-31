@@ -5,10 +5,12 @@
       "collide": true
     },
     {
-      "image": "graphics/tiles/atland_stone.png"
+      "image": "graphics/tiles/atland_stone.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/atland_dirt.png"
+      "image": "graphics/tiles/atland_dirt.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/atland_wall_top.png",
@@ -19,27 +21,32 @@
       "collide": true
     },
     {
-      "image": "graphics/tiles/empty.png"
+      "image": "graphics/tiles/empty.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/worship_floor.png"
+      "image": "graphics/tiles/worship_floor.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/elf_field_grass.png"
+      "image": "graphics/tiles/elf_field_grass.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/elf_field_rock.png",
       "collide": true
     },
     {
-      "image": "graphics/tiles/elf_field_dirt.png"
+      "image": "graphics/tiles/elf_field_dirt.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/atland_wall_side.png",
       "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_dirt.png"
+      "image": "graphics/tiles/gold_cave_dirt.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/gold_cave_wall_side_3.png",
@@ -58,38 +65,48 @@
       "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_dirt_shadow.png"
+      "image": "graphics/tiles/gold_cave_dirt_shadow.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_dirt_wall.png"
+      "image": "graphics/tiles/gold_cave_dirt_wall.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_sampson_floor.png"
+      "image": "graphics/tiles/gold_cave_sampson_floor.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/gold_cave_sampson_floor_side.png",
       "collide": true
     },
     {
-      "image": "graphics/tiles/gold_cave_sampson_small_decor_top.png"
+      "image": "graphics/tiles/gold_cave_sampson_small_decor_top.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_sampson_small_decor_bottom.png"
+      "image": "graphics/tiles/gold_cave_sampson_small_decor_bottom.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_door_corner_left.png"
+      "image": "graphics/tiles/gold_cave_door_corner_left.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_door_corner_right.png"
+      "image": "graphics/tiles/gold_cave_door_corner_right.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_dirt_door.png"
+      "image": "graphics/tiles/gold_cave_dirt_door.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_sampson_floor_door.png"
+      "image": "graphics/tiles/gold_cave_sampson_floor_door.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_floor.png"
+      "image": "graphics/tiles/philips_castle_1f_floor.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/philips_castle_1f_wall_side.png",
@@ -100,10 +117,12 @@
       "collide": true
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_floor_shadow.png"
+      "image": "graphics/tiles/philips_castle_1f_floor_shadow.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/philips_castle_1f_floor_wall.png"
+      "image": "graphics/tiles/philips_castle_1f_floor_wall.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/philips_castle_1f_emblem_1.png",
@@ -122,32 +141,40 @@
       "collide": true
     },
     {
-      "image": "graphics/tiles/dwarf_desert_dirt.png"
+      "image": "graphics/tiles/dwarf_desert_dirt.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/dwarf_desert_rock.png",
       "collide": true
     },
     {
-      "image": "graphics/tiles/dwarf_desert_grass.png"
+      "image": "graphics/tiles/dwarf_desert_grass.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_beam_vertical.png"
+      "image": "graphics/tiles/gold_cave_beam_vertical.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/gold_cave_beam_horizontal.png"
+      "image": "graphics/tiles/gold_cave_beam_horizontal.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/elf_field_tree_1.png"
+      "image": "graphics/tiles/elf_field_tree_1.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/elf_field_tree_2.png"
+      "image": "graphics/tiles/elf_field_tree_2.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/elf_field_tree_3.png"
+      "image": "graphics/tiles/elf_field_tree_3.png",
+      "collide": false
     },
     {
-      "image": "graphics/tiles/elf_field_tree_4.png"
+      "image": "graphics/tiles/elf_field_tree_4.png",
+      "collide": false
     },
     {
       "image": "graphics/tiles/elf_field_tree_5.png",
@@ -191,7 +218,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           3,
           3,
@@ -15582,7 +15609,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           8,
           8,
@@ -17329,7 +17356,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           5,
           5,
@@ -19296,7 +19323,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           0,
           0,
@@ -38535,7 +38562,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           13,
           13,
@@ -39078,7 +39105,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           45,
           44,
@@ -51397,7 +51424,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           44,
           45,
@@ -59364,7 +59391,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           5,
           5,
@@ -74179,7 +74206,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           13,
           13,
@@ -75146,7 +75173,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           13,
           13,
@@ -75645,7 +75672,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           8,
           8,
@@ -80188,7 +80215,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           4,
           4,
@@ -88411,7 +88438,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           5,
           5,
@@ -118946,7 +118973,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           5,
           28,
@@ -119489,7 +119516,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           5,
           28,
@@ -120032,7 +120059,7 @@
           }
         }
       ],
-      "tilemap": {
+      "tilemaps": {
         "base": [
           35,
           35,

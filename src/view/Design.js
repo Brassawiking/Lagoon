@@ -1,3 +1,4 @@
+//@ts-check
 export const Design = () => `
   <div class="design">
     <div class="text-normal">Normal text</div>

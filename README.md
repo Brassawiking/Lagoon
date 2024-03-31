@@ -4,6 +4,7 @@ https://brassawiking.github.io/Lagoon/
 
 ## Bugs
 - No credits given for references
+- Add map and copy map broken
 
 ## Milestones
 

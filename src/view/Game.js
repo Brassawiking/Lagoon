@@ -1,3 +1,4 @@
+//@ts-check
 import { ref } from '../../feppla/feppla.js'
 import { loadImage, clamp } from '../utils.js'
 import { resources } from './Editor.js'
@@ -94,8 +95,8 @@ export const Game = () => `
         const cameraX = clamp(Math.floor(playerX) - canvas.width / 2, 0, map.width * TILE_SIZE - canvas.width)
         const cameraY = clamp(Math.floor(playerY) - canvas.height / 2, 0, map.height * TILE_SIZE - canvas.height)
 
-        for (let index = 0 ; index < map.tilemap.base.length ; ++index) {
-          const tileIndex = map.tilemap.base[index]
+        for (let index = 0 ; index < map.tilemaps.base.length ; ++index) {
+          const tileIndex = map.tilemaps.base[index]
           const x = (index % map.width) * TILE_SIZE - cameraX
           const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
 
@@ -176,8 +177,8 @@ export const Game = () => `
           48,
         )
 
-        for (let index = 0 ; index < map.tilemap.overlay.length ; ++index) {
-          const tileIndex = map.tilemap.overlay[index]
+        for (let index = 0 ; index < map.tilemaps.overlay.length ; ++index) {
+          const tileIndex = map.tilemaps.overlay[index]
           const x = (index % map.width) * TILE_SIZE - cameraX
           const y = Math.floor(index / map.width) * TILE_SIZE - cameraY
 
