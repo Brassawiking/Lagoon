@@ -1,4 +1,3 @@
-//@ts-check
 import { ref, repeat, conditional, text } from '../feppla/feppla.js'
 
 import { Game } from './view/Game.js'

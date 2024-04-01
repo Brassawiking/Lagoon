@@ -1,4 +1,6 @@
 {
   "css.validate": false,
-  "editor.indentSize": 2
+  "editor.indentSize": 2,
+  "js/ts.implicitProjectConfig.checkJs": true,
+  "js/ts.implicitProjectConfig.target": "ESNext"
 }

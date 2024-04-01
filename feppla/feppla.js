@@ -16,14 +16,25 @@ requestAnimationFrame(function processLiveQueue() {
 })
 export const debugLiveWatchers = () => liveWatchers
 
+/** 
+ * @param {Node} [explicitNode] 
+ */
 export const ref = (explicitNode) => {
+  /** @type {((el: Node) => void)[]} */
   const callbacks = []
-  const api = {
+
+  const api = {    
+    /** 
+     * @param {(el: Node) => void} callback 
+     */
     node: (callback) => {
       callbacks.push(callback)
       return api
     },
 
+    /** 
+     * @param {(el: Node) => void} callback 
+     */
     live: (callback) => {
       callbacks.push((el) => {
         ++liveWatchers
@@ -40,11 +51,17 @@ export const ref = (explicitNode) => {
       return api
     },
 
-    set: (setter, valueFunc, compareFunc = (a, b) => a === b) => {
+    /** 
+     * @template T
+     * @param {(el: Node, newValue: T, oldValue: T) => void} setter 
+     * @param {(el: Node) => T} valueFunc
+     * @param {(a: T, b: T) => boolean} equalsFunc
+     */
+    set: (setter, valueFunc, equalsFunc = (a, b) => a === b) => {
       let oldValue
       api.live((el) => {
         const newValue = valueFunc(el)
-        if (!compareFunc(newValue, oldValue)) {
+        if (!equalsFunc(newValue, oldValue)) {
           setter(el, newValue, oldValue)
           oldValue = newValue
         }
@@ -53,28 +70,51 @@ export const ref = (explicitNode) => {
     },
 
     // TODO: Make "on" set based instead so you can change or remove the event listener dynamically
+    /** 
+     * @template {keyof GlobalEventHandlersEventMap} TEventType
+     * @template {GlobalEventHandlersEventMap[TEventType] & { target: any}} TEvent
+     * @param {TEventType} type 
+     * @param {(event: TEvent, el: Node) => void} callback
+     * @param {boolean | AddEventListenerOptions | undefined} options
+     */
     on: (type, callback, options = {}) => {
-      api.node((el) => el.addEventListener(type, (event) => callback(event, el), options))
+      api.node((el) => el.addEventListener(type, /**@param {any} event*/(event) => callback(event, el), options))
       return api
     },
 
+    /** 
+     * @param {string} property 
+     * @param {(el: Node) => any} valueFunc
+     */
     style: (property, valueFunc) => {
-      api.set((el, value) => el.style[property] = value, valueFunc)
+      api.set((el, value) => /**@type {HTMLElement | SVGElement}*/(el).style[property] = value, valueFunc)
       return api
     },
 
+    /** 
+     * @param {string} property 
+     * @param {(el: Node) => any} valueFunc
+     */
     property: (property, valueFunc) => {
       api.set((el, value) => el[property] = value, valueFunc)
       return api
     },
 
+    /** 
+     * @param {string} attribute 
+     * @param {(el: Node) => any} valueFunc
+     */
     attribute: (attribute, valueFunc) => {
-      api.set((el, value) => el.setAttribute(attribute, value), valueFunc)
+      api.set((el, value) => /**@type {HTMLElement | SVGElement}*/(el).setAttribute(attribute, value), valueFunc)
       return api
     },
 
+    /** 
+     * @param {string} className 
+     * @param {(el: Node) => any} valueFunc
+     */
     class: (className, valueFunc) => {
-      api.set((el, value) => el.classList.toggle(className, value), valueFunc)
+      api.set((el, value) => /**@type {HTMLElement | SVGElement}*/(el).classList.toggle(className, value), valueFunc)
       return api
     },
 
@@ -120,14 +160,25 @@ export const ref = (explicitNode) => {
 const renderTemplate = document.createElement('template')
 const validateRepeatRenderingSingleRoot = (children) => children.length > 1 && console.error('Repeat does not support multiple roots in render function, remaining roots omitted!')
 
+/** 
+ * @param {Node} [explicitInsertionPoint] 
+ */
 export const template = (explicitInsertionPoint) => {
+  /** @type {((insert: (node: Node) => Node) => void)[]} */
   const callbacks = []
+
   const api = {
+    /** 
+     * @param {(insert: (node: Node) => Node) => void} callback 
+     */
     modify: (callback) => {
       callbacks.push(callback)
       return api
     },
 
+    /** 
+     * @param {(el: Node) => string} valueFunc 
+     */
     text: (valueFunc) => {
       api.modify((insert) => {
         ref(insert(document.createTextNode('')))
@@ -138,6 +189,11 @@ export const template = (explicitInsertionPoint) => {
     },
 
     // TODO: Remove in favor of repeat as basis instead?
+    /** 
+     * @template T 
+     * @param {(el: Node) => T} valueFunc 
+     * @param {(value: T) => string} renderFunc 
+     */
     conditional: (valueFunc, renderFunc) => {
       api.modify((insert) => {
         const startNode = insert(document.createTextNode(''))
@@ -146,9 +202,12 @@ export const template = (explicitInsertionPoint) => {
         ref(startNode)
           .set(
             (_, value) => {
+              /** @type {Node[]} */
               const currentContent = []
+              const parentElement = /** @type {Node} */(startNode.parentNode)
               
-              let contentNode = startNode
+              /** @type {Node | null} */
+              let contentNode = startNode 
               while ((contentNode = contentNode.nextSibling) != endNode) {
                 if (contentNode == null) {
                   console.error('Conditional end point is missing!')
@@ -158,11 +217,10 @@ export const template = (explicitInsertionPoint) => {
               }
 
               for (let i = 0 ; i < currentContent.length ; ++i) {
-                currentContent[i].remove()
+                parentElement?.removeChild(currentContent[i])
               }
 
               let elements
-              const parentElement = startNode.parentNode
               if (parentElement instanceof SVGElement) {
                 renderTemplate.innerHTML = `<svg>${renderFunc(value)}</svg>`
                 elements = Array.from(renderTemplate.content.children[0].children)
@@ -183,7 +241,14 @@ export const template = (explicitInsertionPoint) => {
     },
 
     // TODO: Support for multiple render roots by using text nodes as markers
-    repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, compareFunc) => {
+    /** 
+     * @template T 
+     * @param {(el: Node) => T[]} valueFunc 
+     * @param {(value: T, index: number) => string} renderFunc 
+     * @param {(item: T, index: number) => any} keyFunc 
+     * @param {(a: T[], b: T[]) => boolean} equalsFunc 
+     */
+    repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, equalsFunc) => {
       api.modify((insert) => {
         const startNode = insert(document.createTextNode(''))
         const endNode = insert(document.createTextNode(''))
@@ -191,8 +256,12 @@ export const template = (explicitInsertionPoint) => {
         ref(startNode)
           .set(
             (_, items) => {
+              /** @type {Node[]} */
               const currentContent = []
+              const parentElement = /** @type {Node} */(startNode.parentNode)
               
+              
+              /** @type {Node | null} */
               let contentNode = startNode
               while ((contentNode = contentNode.nextSibling) != endNode) {
                 if (contentNode == null) {
@@ -202,11 +271,10 @@ export const template = (explicitInsertionPoint) => {
                 currentContent.push(contentNode)
               }
               
-              const parentElement = startNode.parentNode
               for (let index = 0 ; index < items.length ; ++index) {
                 const item = items[index]
                 const key = keyFunc(item, index)
-                const currentElementIndex = currentContent.findIndex(x => x._key === key)
+                const currentElementIndex = currentContent.findIndex(x => /**@type {any}*/(x)._key === key)
                 let element
             
                 if (currentElementIndex < 0) {
@@ -219,7 +287,7 @@ export const template = (explicitInsertionPoint) => {
                     element = renderTemplate.content.children[0]
                     validateRepeatRenderingSingleRoot(renderTemplate.content.children)
                   }
-                  element._key = key
+                  /**@type {any}*/(element)._key = key
                 } else {
                   element = currentContent.splice(currentElementIndex, 1)[0]
                 }
@@ -227,11 +295,11 @@ export const template = (explicitInsertionPoint) => {
               }
             
               for (let i = 0 ; i < currentContent.length ; ++i) {
-                currentContent[i].remove()
+                parentElement.removeChild(currentContent[i])
               }
             },
             valueFunc,
-            compareFunc
+            equalsFunc
           )
           .done()
       })
@@ -240,7 +308,7 @@ export const template = (explicitInsertionPoint) => {
 
     if: (valueFunc, renderFunc) => {
       // TODO: Use repeat instead?
-      api.conditional(valueFunc, (value) => value ? renderFunc() : '')
+      api.conditional(valueFunc, (value) => value ? renderFunc(value) : '')
       return api
     },
 
@@ -254,8 +322,13 @@ export const template = (explicitInsertionPoint) => {
         console.error('Called .done() without explict insertion point!')
         return
       }
+      const parent = explicitInsertionPoint.parentNode 
+      if (!parent) {
+        console.error('Called .done() with parentless explict insertion point!')
+        return
+      }
 
-      const insert = (node) => explicitInsertionPoint.parentNode.insertBefore(node, explicitInsertionPoint)
+      const insert = (node) => parent.insertBefore(node, explicitInsertionPoint)
       for (let i = 0 ; i < callbacks.length ; ++i) {
         callbacks[i](insert)
       }
@@ -272,8 +345,11 @@ export const template = (explicitInsertionPoint) => {
       queueMicrotask(() => {
         const commentIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT);
 
-        let implicitInsertionPoint
-        let currentComment
+        /** @type {Node | null} */
+        let implicitInsertionPoint = null
+        /** @type {Node | null} */
+        let currentComment = null
+
         while (currentComment = commentIterator.nextNode()) {
           if (currentComment.textContent === templateId)  {
             implicitInsertionPoint = currentComment
@@ -286,12 +362,18 @@ export const template = (explicitInsertionPoint) => {
           return
         }
 
-        const insert = (node) => implicitInsertionPoint.parentNode.insertBefore(node, implicitInsertionPoint)
+        const parent = implicitInsertionPoint.parentNode
+        if (!parent) {
+          console.error('Implicit insertion point is missing parent!')
+          return
+        }
+
+        const insert = (node) => parent.insertBefore(node, implicitInsertionPoint)
         for (let i = 0 ; i < callbacks.length ; ++i) {
           callbacks[i](insert)
         }
 
-        implicitInsertionPoint.remove()
+        parent.removeChild(implicitInsertionPoint)
       })
     
       return `<!--${templateId}-->`
@@ -301,11 +383,16 @@ export const template = (explicitInsertionPoint) => {
   return api
 }
 
-export const text = (...args) => template().text(...args)
-export const iffy = (...args) => template().if(...args)
-export const repeat = (...args) => template().repeat(...args)
-export const switchy = (...args) => template().switch(...args)
-export const conditional = (...args) => template().conditional(...args)
+export const text = (...args) => template().text.apply(null, args)
+export const iffy = (...args) => template().if.apply(null, args)
+export const repeat = (...args) => template().repeat.apply(null, args)
+export const switchy = (...args) => template().switch.apply(null, args)
+export const conditional = (...args) => template().conditional.apply(null, args)
 
 // Helpers
+/** 
+ * @template T
+ * @param {T[]} a
+ * @param {T[]} b
+ */
 export const compareArrays = (a, b) => a === b || (a?.length === b?.length && a.every((element, index) => element === b[index]))

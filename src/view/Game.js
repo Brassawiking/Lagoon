@@ -1,4 +1,3 @@
-//@ts-check
 import { ref } from '../../feppla/feppla.js'
 import { loadImage, clamp } from '../utils.js'
 import { resources } from './Editor.js'
@@ -43,6 +42,7 @@ setMap(0, 0)
 export const Game = () => `
   <div class="game" tabindex="0" ${ref()
     .node((el) => {
+      //@ts-ignore
       el.focus()
     })
     .on('keydown', (event) => {
@@ -53,7 +53,8 @@ export const Game = () => `
     })
   }>
     <canvas class="dialog" ${ref()
-      .live((canvas) => {
+      .live((el) => {
+        const canvas = /**@type {HTMLCanvasElement}*/ (el)
         const tileImages = resources.tileImages
         const map = resources.data.maps[currentMapIndex]
         let moving = false
@@ -83,7 +84,7 @@ export const Game = () => `
 
         walkCounter = moving ? walkCounter + 1 : 0
 
-        const ctx = canvas.getContext('2d')
+        const ctx = /**@type {CanvasRenderingContext2D} */ (canvas.getContext('2d'))
         canvas.width = RESOLUTION_WIDTH
         canvas.height = RESOLUTION_HEIGHT
         canvas.style.width = `${canvas.width * RESOLUTION_SCALE}px`

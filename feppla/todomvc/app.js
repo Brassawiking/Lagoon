@@ -34,6 +34,7 @@ ref(document)
   .property('title', () => [todos.length && currentFilterName, 'Feppla', 'TodoMVC'].filter(x => x).join(' • '))
   .done()
 
+//@ts-ignore
 document.querySelector('#app').innerHTML = `
   <section class="todoapp">
     <header class="header">
@@ -92,6 +93,7 @@ document.querySelector('#app').innerHTML = `
                   .on('dblclick', (event, el) => {
                     editingTodo = todo
                     requestAnimationFrame(() => {
+                      //@ts-ignore
                       el.closest('li').querySelector('.edit').focus()
                     })
                   })

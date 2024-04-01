@@ -1,4 +1,3 @@
-//@ts-check
 import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
 import { clamp, mouseDrag, loadImage } from '../utils.js'
 import rawData from '../../data/data.json' with { type: 'json' }
@@ -22,7 +21,9 @@ const data = new Data(structuredClone(rawData))
 let viewOriginX = -50
 let viewOriginY = -50
 let viewZoom = 100
-let currentMap
+
+/** @type {Map | null} */
+let currentMap = null
 let currentTool = TOOL_MOVE
 let currentPaintingTile = 0
 
@@ -121,6 +122,10 @@ const addMap = () => {
 }
 
 const copyMap = () => {
+  if (!currentMap) {
+    return
+  }
+
   data.maps = [
     ...data.maps,
     currentMap = {
@@ -146,12 +151,15 @@ const updateMapSize = (width, height) => {
   const newBaseLayer = Array(width * height).fill(currentPaintingTile)
   currentMap.width = width
   currentMap.height = height
-  currentMap.tilemap = {
+  currentMap.tilemaps = {
     base: newBaseLayer,
     overlay: new Array(newBaseLayer.length).fill(0)
   }
 }
 
+/**
+ * @param {Map} map
+ */
 const handleEditMap = (event, map) => {
   if (currentMap !== map) {
     return
@@ -165,10 +173,10 @@ const handleEditMap = (event, map) => {
     if (event.buttons & MOUSE_LEFT_BUTTON_BIT) {
       event.stopPropagation()
       if (currentTool === TOOL_PAINT && showBaseLayer) {
-        map.tilemap.base[index] = currentPaintingTile  
+        map.tilemaps.base[index] = currentPaintingTile  
       }
       if (currentTool === TOOL_PAINT_OVERLAY && showOverlayLayer) {
-        map.tilemap.overlay[index] = currentPaintingTile  
+        map.tilemaps.overlay[index] = currentPaintingTile  
       }
     }
   }
@@ -190,7 +198,11 @@ const handleEditMap = (event, map) => {
         x: clamp(Math.round(event.offsetX / TILE_SIZE), 0, map.width - 1),
         y: clamp(Math.round(event.offsetY / TILE_SIZE), 0, map.height - 1),
         width: 4,
-        height: 4
+        height: 4,
+        target: {
+          mapIndex: 0,
+          entranceIndex: 0
+        }
       }]
     }
   }
@@ -422,7 +434,7 @@ export const Editor = () => `
         </table>
       </fieldset>
 
-      ${iffy(() => currentMap, () => `
+      ${iffy(() => currentMap, (/**@type {Map}*/currentMap) => `
         <fieldset>
           <legend>Current map selected</legend>
 
@@ -461,7 +473,7 @@ export const Editor = () => `
               .property('max', () => data.tiles.length - 1)
               .on('keypress', (event) =>  { 
                 if (event.key === 'Enter') {
-                  currentMap.tilemap.base = currentMap.tilemap.base.map(x => x == event.target.value ? currentPaintingTile : x)
+                  currentMap.tilemaps.base = currentMap.tilemaps.base.map(x => x == event.target.value ? currentPaintingTile : x)
                 } 
               })
             }>
@@ -481,8 +493,7 @@ export const Editor = () => `
         <legend>Tiles (${data.tiles.length})</legend>
 
         <div class="tile-palette"> 
-          ${/*@ts-ignore*/
-            repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
+          ${repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
             <div class="preview" ${ref()
               .class('selected', () => tile === data.tiles[currentPaintingTile])
               .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
