@@ -177,7 +177,7 @@ export const template = (explicitInsertionPoint) => {
     },
 
     /** 
-     * @param {(el: Node) => string} valueFunc 
+     * @param {(el: Node) => any} valueFunc 
      */
     text: (valueFunc) => {
       api.modify((insert) => {
@@ -245,8 +245,8 @@ export const template = (explicitInsertionPoint) => {
      * @template T 
      * @param {(el: Node) => T[]} valueFunc 
      * @param {(value: T, index: number) => string} renderFunc 
-     * @param {(item: T, index: number) => any} keyFunc 
-     * @param {(a: T[], b: T[]) => boolean} equalsFunc 
+     * @param {(item: T, index: number) => any} [keyFunc]
+     * @param {(a: T[], b: T[]) => boolean} [equalsFunc]
      */
     repeat: (valueFunc, renderFunc, keyFunc = (item, index) => item, equalsFunc) => {
       api.modify((insert) => {
@@ -306,14 +306,14 @@ export const template = (explicitInsertionPoint) => {
       return api
     },
 
+    /** 
+     * @template T 
+     * @param {(el: Node) => T | undefined | null} valueFunc 
+     * @param {(value: T) => string} renderFunc 
+     */
     if: (valueFunc, renderFunc) => {
       // TODO: Use repeat instead?
       api.conditional(valueFunc, (value) => value ? renderFunc(value) : '')
-      return api
-    },
-
-    switch: (valueFunc, renderFuncs) => {
-      api.conditional(valueFunc, (value) => renderFuncs[value]?.() || '')
       return api
     },
 
@@ -383,11 +383,33 @@ export const template = (explicitInsertionPoint) => {
   return api
 }
 
-export const text = (...args) => template().text.apply(null, args)
-export const iffy = (...args) => template().if.apply(null, args)
-export const repeat = (...args) => template().repeat.apply(null, args)
-export const switchy = (...args) => template().switch.apply(null, args)
-export const conditional = (...args) => template().conditional.apply(null, args)
+/** 
+ * @param {(el: Node) => any} valueFunc 
+ */
+export const text = (valueFunc) => template().text(valueFunc)
+
+/** 
+ * @template T 
+ * @param {(el: Node) => T | undefined | null} valueFunc 
+ * @param {(value: T) => string} renderFunc 
+ */
+export const iffy = (valueFunc, renderFunc) => template().if(valueFunc, renderFunc)
+
+/** 
+ * @template T 
+ * @param {(el: Node) => T[]} valueFunc 
+ * @param {(value: T, index: number) => string} renderFunc 
+ * @param {(item: T, index: number) => any} [keyFunc]
+ * @param {(a: T[], b: T[]) => boolean} [equalsFunc]
+ */
+export const repeat = (valueFunc, renderFunc, keyFunc, equalsFunc) => template().repeat(valueFunc, renderFunc, keyFunc, equalsFunc)
+
+/** 
+ * @template T 
+ * @param {(el: Node) => T} valueFunc 
+ * @param {(value: T) => string} renderFunc 
+ */
+export const conditional = (valueFunc, renderFunc) => template().conditional(valueFunc, renderFunc)
 
 // Helpers
 /** 

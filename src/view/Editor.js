@@ -65,16 +65,18 @@ const handleWheelZoom = (event) => {
 }
 
 const handleMousedownPan = (event) => {
-  mouseDrag(event, MOUSE_RIGHT_BUTTON, () => {
-    const x = viewOriginX
-    const y = viewOriginY
-
-    return {
-      onDrag: (deltaX, deltaY) => {
-        viewOriginX = x - Math.round(deltaX * 100 / viewZoom)
-        viewOriginY = y - Math.round(deltaY * 100 / viewZoom)
+  [MOUSE_RIGHT_BUTTON, MOUSE_MIDDLE_BUTTON].forEach(mouseButton => {
+    mouseDrag(event, mouseButton, () => {
+      const x = viewOriginX
+      const y = viewOriginY
+  
+      return {
+        onDrag: (deltaX, deltaY) => {
+          viewOriginX = x - Math.round(deltaX * 100 / viewZoom)
+          viewOriginY = y - Math.round(deltaY * 100 / viewZoom)
+        }
       }
-    }
+    })
   })
 }
 
@@ -343,26 +345,20 @@ export const Editor = () => `
           Current tool: <span style="color: #ffff00;">${text(() => currentTool)}</span>
         </div>
 
-        <button ${ref().on('click', () => currentTool = TOOL_MOVE)}>
-          ${TOOL_MOVE}
-        </button>
+        ${[
+            TOOL_MOVE, 
+            TOOL_PAINT, 
+            TOOL_PAINT_OVERLAY, 
+            TOOL_ENTRANCE, 
+            TOOL_EXIT
+          ]
+          .map(tool => `
+            <button ${ref().on('click', () => currentTool = tool)}>
+              ${tool}
+            </button>
+          `).join('\n')
+        }
 
-        <button ${ref().on('click', () => currentTool = TOOL_PAINT)}>
-          ${TOOL_PAINT}
-        </button>
-
-        <button ${ref().on('click', () => currentTool = TOOL_PAINT_OVERLAY)}>
-          ${TOOL_PAINT_OVERLAY}
-        </button>
-
-        <button ${ref().on('click', () => currentTool = TOOL_ENTRANCE)}>
-          ${TOOL_ENTRANCE}
-        </button>
-        
-        <button ${ref().on('click', () => currentTool = TOOL_EXIT)}>
-          ${TOOL_EXIT}
-        </button>
-        
         <button ${ref().on('click', addMap)}>
           Add map
         </button>
@@ -434,7 +430,7 @@ export const Editor = () => `
         </table>
       </fieldset>
 
-      ${iffy(() => currentMap, (/**@type {Map}*/currentMap) => `
+      ${iffy(() => currentMap, (currentMap) => `
         <fieldset>
           <legend>Current map selected</legend>
 
@@ -502,7 +498,7 @@ export const Editor = () => `
                 .property('src', () => tile.image)
               }/>
               <div>
-                ${text(() => `${tile.image.split('.').at(0).split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
+                ${text(() => `${tile.image.split('.')[0].split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
               </div>
             </div>
           `, undefined, compareArrays)}
