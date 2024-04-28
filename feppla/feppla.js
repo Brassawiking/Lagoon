@@ -138,6 +138,7 @@ export const ref = (explicitNode) => {
       const refAttribute = `_ref_${++refIdGenerator}_`
 
       queueMicrotask(() => {
+        // TODO: Support different root besides document (Shadow roots)
         const implicitNode = document.querySelector(`[${refAttribute}]`)
         if (!implicitNode) {
           console.error('Implicit node could not be found during referencing!')
@@ -343,6 +344,7 @@ export const template = (explicitInsertionPoint) => {
       const templateId = `_template_${++templateIdGenerator}_`
 
       queueMicrotask(() => {
+        // TODO: Support different root besides document (Shadow roots)
         const commentIterator = document.createNodeIterator(document.body, NodeFilter.SHOW_COMMENT);
 
         /** @type {Node | null} */
