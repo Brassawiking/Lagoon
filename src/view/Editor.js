@@ -215,7 +215,7 @@ const drawCalls = []
  * @param {Map} map
  */
 const renderMap = (canvas, map) => {
-  drawCalls.push(() => {
+  const drawCall = () => {
     const ctx = canvas.getContext('2d')
     canvas.width = canvas.clientWidth
     canvas.height = canvas.clientHeight
@@ -273,7 +273,12 @@ const renderMap = (canvas, map) => {
         exit.height * TILE_SIZE,
       )
     }
-  })
+  }
+  if (map === currentMap) {
+    drawCalls.unshift(drawCall)
+  } else {
+    drawCalls.push(drawCall)
+  }
 }
 
 export const Editor = () => `

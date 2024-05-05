@@ -4,7 +4,7 @@ https://brassawiking.github.io/Lagoon/
 
 ## Bugs
 - No credits given for references
-- Add map and copy map broken
+- Philips castle 1F wrong height (also width?)
 
 ## Milestones
 
