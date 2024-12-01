@@ -63,5 +63,5 @@ document.querySelector('#app').innerHTML = `
     `)}
   </div>
 
-  ${conditional(() => currentRoute, () => currentRoute.view())}
+  ${conditional(() => currentRoute, (route) => route ? route.view() : '')}
 `
