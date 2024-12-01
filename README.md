@@ -36,6 +36,6 @@ https://brassawiking.github.io/Lagoon/
   - => comparison function for set
 - [x] Daisy-chained API to reduce refs 
   - => Refactored API and implementation
-- [x] Support templating for conditional renderering
+- [x] Support conditional rendering in templates
   - => Referencing by comment and text nodes
 - [ ] Scope reference queries to element being rendered into (Over-optimization?)

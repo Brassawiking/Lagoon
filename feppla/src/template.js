@@ -108,19 +108,19 @@ export const repeat = (valueFuncOrDef, renderFunc) => modify((insert) => {
     .done()
 })
 
+// TODO: Fix better typing for truthy / falsy separation?
 /** 
  * @template T 
- * @param {(el: Node) => T} valueFunc 
+ * @param {(el: Node) => T | undefined | null | false | 0 | ''} valueFunc 
  * @param {(value: T) => string} renderFunc 
  */
-export const conditional = (valueFunc, renderFunc) => repeat({ value: (...args) => [valueFunc(...args)], equals: compareArrays}, renderFunc)
-  
-/** 
- * @template T 
- * @param {(el: Node) => T | undefined | null} valueFunc 
- * @param {(value: T) => string} renderFunc 
- */
-export const when = (valueFunc, renderFunc) => conditional(valueFunc, (value) => value ? renderFunc(value) : '')
+export const when = (valueFunc, renderFunc) => repeat(
+  { 
+    value: (...args) => [valueFunc(...args)], 
+    equals: compareArrays
+  }, 
+  (value) => value ? renderFunc(value) : ''
+)
 
 /** 
  * @param {(el: Node) => any} valueFunc 

@@ -1,4 +1,4 @@
-import { ref, repeat, conditional, text } from '../feppla/index.js'
+import { ref, repeat, when, text } from '../feppla/index.js'
 
 import { Game } from './view/Game.js'
 import { Editor } from './view/Editor.js'
@@ -63,5 +63,5 @@ document.querySelector('#app').innerHTML = `
     `)}
   </div>
 
-  ${conditional(() => currentRoute, (route) => route ? route.view() : '')}
+  ${when(() => currentRoute, (route) => route.view())}
 `
