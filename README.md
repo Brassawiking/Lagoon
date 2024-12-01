@@ -38,4 +38,4 @@ https://brassawiking.github.io/Lagoon/
   - => Refactored API and implementation
 - [x] Support templating for conditional renderering
   - => Referencing by comment and text nodes
-- [ ] Scope reference queries to element being rendered into
+- [ ] Scope reference queries to element being rendered into (Over-optimization?)

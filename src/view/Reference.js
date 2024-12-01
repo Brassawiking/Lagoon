@@ -1,4 +1,4 @@
-import { repeat, ref, text } from '../../feppla/feppla.js'
+import { ref, repeat } from '../../feppla/index.js'
 
 const references = [
   "Atland",

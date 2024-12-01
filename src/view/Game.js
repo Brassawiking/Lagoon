@@ -1,4 +1,4 @@
-import { ref } from '../../feppla/feppla.js'
+import { ref } from '../../feppla/index.js'
 import { loadImage, clamp } from '../utils.js'
 import { resources } from './Editor.js'
 

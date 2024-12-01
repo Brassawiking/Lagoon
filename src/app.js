@@ -1,4 +1,4 @@
-import { ref, repeat, conditional, text } from '../feppla/feppla.js'
+import { ref, repeat, conditional, text } from '../feppla/index.js'
 
 import { Game } from './view/Game.js'
 import { Editor } from './view/Editor.js'

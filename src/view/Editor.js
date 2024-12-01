@@ -1,4 +1,4 @@
-import { ref, debugLiveWatchers, debugRefCounter, debugTemplateCounter, compareArrays, text, repeat, iffy } from '../../feppla/feppla.js'
+import { ref, debugLiveWatchers, text, repeat, when, compareArrays, compareObjects } from '../../feppla/index.js'
 import { clamp, mouseDrag, loadImage } from '../utils.js'
 import rawData from '../../data/data.json' with { type: 'json' }
 import { Data } from '../logic/data.js'
@@ -290,7 +290,7 @@ export const Editor = () => `
       .on('wheel', handleWheelZoom)
     }>
       <div class="canvas" ${ref()
-        .style('scale', () => viewZoom / 100)
+        .style('scale', () => String(viewZoom / 100))
         .live(() => {
           if (drawCalls.length) {
             const drawCall = drawCalls.shift()
@@ -298,7 +298,7 @@ export const Editor = () => `
           }
         })
       }>
-        ${repeat(() => data.maps, (/** @type {Map} */ map) => `
+        ${repeat(() => data.maps, (map) => `
           <div class="map" ${ref()
             .class('current', () => map === currentMap)
             .style('width', () => `${map.width * TILE_SIZE}px`)
@@ -322,13 +322,21 @@ export const Editor = () => `
                   handleEditMap(events[i], map)
                 }
               })
-              .set((canvas) => renderMap(canvas, map), () => map.tilemaps.base.slice(), compareArrays) 
-              .set((canvas) => renderMap(canvas, map), () => map.tilemaps.overlay.slice(), compareArrays) 
-              .set((canvas) => renderMap(canvas, map), () => map.entrances.slice(), compareArrays) 
-              .set((canvas) => renderMap(canvas, map), () => map.exits.slice(), compareArrays) 
-              .set((canvas) => renderMap(canvas, map), () => showCollide) 
-              .set((canvas) => renderMap(canvas, map), () => showBaseLayer) 
-              .set((canvas) => renderMap(canvas, map), () => showOverlayLayer) 
+              .set(
+                {
+                  value: () => ({
+                    base: map.tilemaps.base.slice(),
+                    overlay: map.tilemaps.overlay.slice(),
+                    entrances: map.entrances.slice(),
+                    exits: map.exits.slice(),
+                    showCollide,
+                    showBaseLayer,
+                    showOverlayLayer
+                  }),
+                  equals: compareObjects
+                }, 
+                (canvas) => renderMap(canvas, map)
+              ) 
             }></canvas>
           </div>
         `)}
@@ -418,16 +426,6 @@ export const Editor = () => `
             <td>${text(() => viewZoom)}%</td>
           </tr>
           <tr>
-            <th>[Debug] Used refs</th>
-            <th>:</th>
-            <td>${text(() => debugRefCounter())}</td>
-          </tr>
-          <tr>
-            <th>[Debug] Used templates</th>
-            <th>:</th>
-            <td>${text(() => debugTemplateCounter())}</td>
-          </tr>
-          <tr>
             <th>[Debug] Live watchers</th>
             <th>:</th>
             <td>${text(() => debugLiveWatchers())}</td>
@@ -435,7 +433,7 @@ export const Editor = () => `
         </table>
       </fieldset>
 
-      ${iffy(() => currentMap, (currentMap) => `
+      ${when(() => currentMap, (map) => `
         <fieldset>
           <legend>Current map selected</legend>
 
@@ -443,29 +441,29 @@ export const Editor = () => `
             <label>
               Name:
               <input ${ref()
-                .property('value', () => currentMap.name)
-                .on('input', (event) => currentMap.name = event.target.value)
+                .property('value', () => map.name)
+                .on('input', (event) => map.name = event.target.value)
               }/>
             </label>
 
             <label>
               Width:
               <input type="number" min="1" ${ref()
-                .property('value', () => currentMap.width)
-                .on('change', (event) => updateMapSize(parseInt(event.target.value) || 1, currentMap.height))
+                .property('value', () => map.width)
+                .on('change', (event) => updateMapSize(parseInt(event.target.value) || 1, map.height))
               }/>
             </label>
 
             <label>
               Height:
               <input type="number" min="1" ${ref()
-                .property('value', () => currentMap.height)
-                .on('change', (event) => updateMapSize(currentMap.width, parseInt(event.target.value) || 1))
+                .property('value', () => map.height)
+                .on('change', (event) => updateMapSize(map.width, parseInt(event.target.value) || 1))
               }/>
             </label>
 
-            <div>X: ${text(() => currentMap.x)}</div>
-            <div>Y: ${text(() => currentMap.y)}</div>
+            <div>X: ${text(() => map.x)}</div>
+            <div>Y: ${text(() => map.y)}</div>
           </div>
           
           <label>
@@ -474,7 +472,7 @@ export const Editor = () => `
               .property('max', () => data.tiles.length - 1)
               .on('keypress', (event) =>  { 
                 if (event.key === 'Enter') {
-                  currentMap.tilemaps.base = currentMap.tilemaps.base.map(x => x == event.target.value ? currentPaintingTile : x)
+                  map.tilemaps.base = map.tilemaps.base.map(x => x == event.target.value ? currentPaintingTile : x)
                 } 
               })
             }>
@@ -494,19 +492,25 @@ export const Editor = () => `
         <legend>Tiles (${data.tiles.length})</legend>
 
         <div class="tile-palette"> 
-          ${repeat(() => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)), (tile) => `
-            <div class="preview" ${ref()
-              .class('selected', () => tile === data.tiles[currentPaintingTile])
-              .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
-            }>
-              <img draggable="false" loading="lazy" ${ref()
-                .property('src', () => tile.image)
-              }/>
-              <div>
-                ${text(() => `${tile.image.split('.')[0].split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
+          ${repeat(
+            { 
+              value: () => data.tiles.toSorted((a, b) => a.image.localeCompare(b.image)),
+              equals: compareArrays
+            }, 
+            (tile) => `
+              <div class="preview" ${ref()
+                .class('selected', () => tile === data.tiles[currentPaintingTile])
+                .on('click', () => currentPaintingTile = data.tiles.indexOf(tile))
+              }>
+                <img draggable="false" loading="lazy" ${ref()
+                  .property('src', () => tile.image)
+                }/>
+                <div>
+                  ${text(() => `${tile.image.split('.')[0].split('/').at(-1)} (${data.tiles.indexOf(tile)})`)}
+                </div>
               </div>
-            </div>
-          `, undefined, compareArrays)}
+            `
+          )}
         </div>
       </fieldset>
     </div>
