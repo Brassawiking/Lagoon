@@ -5,6 +5,7 @@
  */
 export const compareArrays = (a, b) => a === b || (a?.length === b?.length && a.every((element, index) => element === b[index]))
 
+// TODO: Add typing
 export const compareObjects = (a, b) => {
   if (a === b) return true
   if ((a && !b) || (!a && b)) return false

@@ -76,10 +76,6 @@ document.querySelector('#app').innerHTML = `
         <label for="toggle-all">Mark all as complete</label>
         <ul class="todo-list"> 
           ${repeat({ value: () => todos.filter(currentFilter), equals: compareArrays}, (todo) => `
-            <li>bonus repeat root</li>
-            <li>bonus repeat root2</li>
-            <li>bonus repeat root4</li>
-            <li>bonus repeat root5</li>
             <li ${ref()
               .class('editing', () => todo === editingTodo)
               .class('completed', () => todo.done)
